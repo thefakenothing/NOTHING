@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="en" dir="ltr" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,32 +8,43 @@
   <!-- Google Fonts & Font Awesome Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Plus+Jakarta+Sans:wght@300;400;500;700&family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Plus+Jakarta+Sans:wght@400;500;700&family=Cairo:wght@500;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <!-- Three.js Library for 3D Graphics -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
   <style>
-    /* ==================== CORE & LUXURY THEME ==================== */
+    /* ==================== CORE & LUXURY THEMES ==================== */
     :root {
-      --bg-black: #050505;
-      --bg-charcoal: #0d0e12;
-      --glass-bg: rgba(18, 19, 26, 0.45);
-      --glass-border: rgba(212, 175, 55, 0.18);
-      --glass-glow: rgba(212, 175, 55, 0.08);
+      --bg-base: #030305;
+      --glass-bg: rgba(15, 16, 22, 0.7);
+      --glass-border: rgba(212, 175, 55, 0.3);
+      --glass-glow: rgba(212, 175, 55, 0.12);
       
       --gold-primary: #D4AF37;
       --gold-light: #F3E5AB;
       --gold-dark: #AA7C11;
-      --text-white: #EDEDED;
-      --text-muted: #8E92A0;
+      --text-main: #FFFFFF;
+      --text-muted: #B3B7C5;
 
       --font-display: 'Cinzel', serif;
       --font-body: 'Plus Jakarta Sans', sans-serif;
     }
 
-    /* Support RTL Arabic font adjustment */
+    [data-theme="light"] {
+      --bg-base: #e6e8ec;
+      --glass-bg: rgba(255, 255, 255, 0.8);
+      --glass-border: rgba(170, 124, 17, 0.35);
+      --glass-glow: rgba(212, 175, 55, 0.2);
+      
+      --gold-primary: #99710F;
+      --gold-light: #664A04;
+      --gold-dark: #4A3402;
+      --text-main: #0B0C10;
+      --text-muted: #333642;
+    }
+
     [dir="rtl"] {
       --font-display: 'Cairo', sans-serif;
       --font-body: 'Cairo', sans-serif;
@@ -47,11 +58,12 @@
     }
 
     body {
-      background-color: var(--bg-black);
-      color: var(--text-white);
+      background-color: var(--bg-base);
+      color: var(--text-main);
       font-family: var(--font-body);
       overflow-x: hidden;
-      line-height: 1.6;
+      line-height: 1.7;
+      transition: background-color 0.4s ease, color 0.4s ease;
     }
 
     /* Background 3D Canvas */
@@ -65,24 +77,12 @@
       pointer-events: none;
     }
 
-    /* Ambient Glow Gradient Overlay */
-    .ambient-glow {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 80vw;
-      height: 80vh;
-      background: radial-gradient(circle, rgba(212, 175, 55, 0.03) 0%, rgba(0,0,0,0) 70%);
-      z-index: -1;
-      pointer-events: none;
-    }
-
     /* Typography Utilities */
     h1, h2, h3, h4, .brand-text {
       font-family: var(--font-display);
       text-transform: uppercase;
-      letter-spacing: 3px;
+      letter-spacing: 2px;
+      font-weight: 700;
     }
 
     .gold-text {
@@ -94,25 +94,25 @@
     /* Apple-style Glassmorphism Cards */
     .glass-card {
       background: var(--glass-bg);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
       border: 1px solid var(--glass-border);
       border-radius: 20px;
-      padding: 2.5rem;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 0 15px var(--glass-glow);
+      padding: 2.2rem;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), inset 0 0 15px var(--glass-glow);
       transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .glass-card:hover {
-      border-color: rgba(212, 175, 55, 0.4);
-      transform: translateY(-8px);
-      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7), inset 0 0 25px rgba(212, 175, 55, 0.15);
+      border-color: rgba(212, 175, 55, 0.6);
+      transform: translateY(-6px);
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), inset 0 0 25px rgba(212, 175, 55, 0.25);
     }
 
-    /* Fade-In Animation Observer */
+    /* Cinematic Fade-In Animation */
     .reveal {
       opacity: 0;
-      transform: translateY(40px);
+      transform: translateY(35px);
       transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1), transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
@@ -124,40 +124,40 @@
     /* ==================== NAVIGATION ==================== */
     nav {
       position: fixed;
-      top: 20px;
+      top: 15px;
       left: 50%;
       transform: translateX(-50%);
-      width: 90%;
+      width: 92%;
       max-width: 1200px;
       z-index: 1000;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 1rem 2rem;
+      padding: 0.8rem 1.8rem;
       border-radius: 50px;
-      background: rgba(13, 14, 18, 0.6);
-      backdrop-filter: blur(15px);
-      -webkit-backdrop-filter: blur(15px);
-      border: 1px solid rgba(212, 175, 55, 0.2);
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
     }
 
     .logo {
-      font-size: 1.4rem;
+      font-size: 1.3rem;
       font-weight: 900;
-      color: #fff;
+      color: var(--text-main);
       text-decoration: none;
-      letter-spacing: 4px;
+      letter-spacing: 3px;
     }
 
-    .nav-right {
+    .nav-controls {
       display: flex;
       align-items: center;
-      gap: 2rem;
+      gap: 1.5rem;
     }
 
     .nav-links {
       display: flex;
-      gap: 2rem;
+      gap: 1.5rem;
       list-style: none;
     }
 
@@ -165,8 +165,8 @@
       color: var(--text-muted);
       text-decoration: none;
       font-size: 0.85rem;
-      font-weight: 500;
-      letter-spacing: 2px;
+      font-weight: 700;
+      letter-spacing: 1px;
       text-transform: uppercase;
       transition: color 0.3s;
     }
@@ -175,23 +175,22 @@
       color: var(--gold-primary);
     }
 
-    /* Language Toggle Switch Button */
-    .lang-btn {
-      background: rgba(212, 175, 55, 0.1);
+    .control-btn {
+      background: rgba(212, 175, 55, 0.12);
       border: 1px solid var(--gold-primary);
-      color: var(--gold-light);
-      padding: 6px 16px;
+      color: var(--gold-primary);
+      padding: 6px 14px;
       border-radius: 30px;
       cursor: pointer;
       font-size: 0.85rem;
       font-weight: 700;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       transition: all 0.3s ease;
     }
 
-    .lang-btn:hover {
+    .control-btn:hover {
       background: var(--gold-primary);
       color: #000;
       box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
@@ -205,32 +204,7 @@
       justify-content: center;
       align-items: center;
       text-align: center;
-      padding: 0 1.5rem;
-      position: relative;
-    }
-
-    .hero-subtitle {
-      font-size: 0.9rem;
-      letter-spacing: 8px;
-      color: var(--gold-primary);
-      margin-bottom: 1.5rem;
-      text-transform: uppercase;
-    }
-
-    .hero-title {
-      font-size: clamp(3.5rem, 8vw, 7.5rem);
-      font-weight: 900;
-      line-height: 1.05;
-      margin-bottom: 1.5rem;
-      text-shadow: 0 10px 30px rgba(0,0,0,0.8);
-    }
-
-    .hero-desc {
-      max-width: 650px;
-      color: var(--text-muted);
-      font-size: 1.1rem;
-      letter-spacing: 1px;
-      margin-bottom: 2.5rem;
+      padding: 6rem 1.5rem 2rem 1.5rem;
     }
 
     .hero-badge {
@@ -239,152 +213,155 @@
       gap: 10px;
       padding: 8px 20px;
       border-radius: 30px;
-      background: rgba(212, 175, 55, 0.05);
-      border: 1px solid rgba(212, 175, 55, 0.2);
-      font-size: 0.8rem;
+      background: rgba(212, 175, 55, 0.08);
+      border: 1px solid var(--glass-border);
+      font-size: 0.85rem;
       letter-spacing: 2px;
-      color: var(--gold-light);
+      color: var(--gold-primary);
+      margin-bottom: 1.5rem;
+      font-weight: 700;
+    }
+
+    .hero-title {
+      font-size: clamp(3rem, 7vw, 6.5rem);
+      font-weight: 900;
+      line-height: 1.1;
+      margin-bottom: 1.2rem;
+    }
+
+    .hero-subtitle {
+      font-size: 1rem;
+      letter-spacing: 6px;
+      color: var(--gold-primary);
+      margin-bottom: 1.5rem;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .hero-desc {
+      max-width: 680px;
+      color: var(--text-main);
+      font-size: 1.15rem;
+      line-height: 1.8;
+      font-weight: 500;
     }
 
     /* ==================== SECTIONS COMMON ==================== */
     section {
-      padding: 8rem 2rem;
+      padding: 6rem 1.5rem;
       max-width: 1300px;
       margin: 0 auto;
     }
 
     .section-header {
       text-align: center;
-      margin-bottom: 5rem;
+      margin-bottom: 4rem;
     }
 
     .section-header h2 {
-      font-size: 2.8rem;
-      margin-bottom: 1rem;
+      font-size: clamp(2rem, 4vw, 2.8rem);
+      margin-bottom: 0.8rem;
     }
 
     .section-header p {
-      color: var(--text-muted);
+      color: var(--gold-primary);
       letter-spacing: 2px;
       font-size: 0.9rem;
+      font-weight: 700;
     }
 
-    /* 3D Canvas Cards Container */
     .grid-3d {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 2.5rem;
-    }
-
-    .card-3d-wrapper {
-      display: flex;
-      flex-direction: column;
-      position: relative;
-    }
-
-    .canvas-container {
-      width: 100%;
-      height: 220px;
-      border-radius: 15px;
-      overflow: hidden;
-      margin-bottom: 1.5rem;
-      background: rgba(5, 5, 5, 0.6);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-    }
-
-    /* ==================== IDENTITY SECTION ==================== */
-    .about-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 3rem;
-      align-items: center;
-    }
-
-    @media (max-width: 900px) {
-      .about-grid { grid-template-columns: 1fr; }
-    }
-
-    .about-text p {
-      color: var(--text-muted);
-      font-size: 1.1rem;
-      margin-bottom: 1.5rem;
-      line-height: 1.8;
-    }
-
-    .trait-tag {
-      display: inline-block;
-      padding: 6px 16px;
-      margin: 4px;
-      border-radius: 20px;
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(212, 175, 55, 0.15);
-      font-size: 0.85rem;
-      color: var(--gold-light);
-    }
-
-    /* ==================== EXPERTISE SECTION ==================== */
-    .skill-card h3 {
-      font-size: 1.3rem;
-      margin-bottom: 0.8rem;
-      color: #fff;
-    }
-
-    .skill-card p {
-      color: var(--text-muted);
-      font-size: 0.95rem;
-    }
-
-    /* ==================== DOMAINS SECTION ==================== */
-    .domain-item h3 {
-      font-size: 1.4rem;
-      margin-bottom: 0.5rem;
-    }
-
-    /* ==================== PSYCHE & INTEL ==================== */
-    .psyche-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 2rem;
     }
 
+    .canvas-container {
+      width: 100%;
+      height: 200px;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 1.2rem;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid var(--glass-border);
+    }
+
+    /* ==================== IDENTITY SECTION ==================== */
+    .about-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 2.5rem;
+    }
+
+    .about-text p {
+      color: var(--text-main);
+      font-size: 1.05rem;
+      margin-bottom: 1.2rem;
+      font-weight: 500;
+    }
+
+    .trait-tag {
+      display: inline-block;
+      padding: 6px 14px;
+      margin: 3px;
+      border-radius: 20px;
+      background: rgba(212, 175, 55, 0.08);
+      border: 1px solid var(--glass-border);
+      font-size: 0.85rem;
+      color: var(--gold-primary);
+      font-weight: 700;
+    }
+
+    /* ==================== PSYCHE & INTEL ==================== */
+    .psyche-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 2rem;
+    }
+
     .psyche-box {
-      border-left: 3px solid var(--gold-primary);
-      padding-left: 1.5rem;
+      border-left: 4px solid var(--gold-primary);
+      padding-left: 1.2rem;
     }
 
     [dir="rtl"] .psyche-box {
       border-left: none;
-      border-right: 3px solid var(--gold-primary);
+      border-right: 4px solid var(--gold-primary);
       padding-left: 0;
-      padding-right: 1.5rem;
+      padding-right: 1.2rem;
     }
 
     .psyche-box h4 {
-      font-size: 1.1rem;
+      font-size: 1.2rem;
       margin-bottom: 0.5rem;
-      color: var(--gold-light);
+      color: var(--gold-primary);
+    }
+
+    .psyche-box p {
+      color: var(--text-main);
+      font-size: 1rem;
+      font-weight: 500;
     }
 
     /* ==================== SOCIAL & FOOTER ==================== */
     .social-links {
       display: flex;
       justify-content: center;
-      gap: 2rem;
+      gap: 1.5rem;
       flex-wrap: wrap;
-      margin-top: 3rem;
     }
 
     .social-btn {
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding: 1rem 2.5rem;
+      gap: 10px;
+      padding: 0.9rem 2.2rem;
       border-radius: 40px;
       text-decoration: none;
-      color: #fff;
+      color: var(--text-main);
       font-size: 0.9rem;
-      letter-spacing: 2px;
-      transition: all 0.4s;
+      letter-spacing: 1px;
+      font-weight: 700;
     }
 
     .social-btn i {
@@ -393,31 +370,44 @@
     }
 
     footer {
-      padding: 4rem 2rem;
+      padding: 3rem 1.5rem;
       text-align: center;
-      border-top: 1px solid rgba(212, 175, 55, 0.1);
+      border-top: 1px solid var(--glass-border);
       color: var(--text-muted);
       font-size: 0.85rem;
-      letter-spacing: 2px;
+      letter-spacing: 1px;
+      font-weight: 700;
     }
 
-    /* Responsive Adjustments */
-    @media (max-width: 768px) {
-      .nav-links { display: none; }
-      .hero-title { font-size: 3.5rem; }
+    /* ==================== RESPONSIVE DESIGN (MOBILE & TABLETS) ==================== */
+    @media (max-width: 868px) {
+      nav {
+        padding: 0.6rem 1rem;
+      }
+      .nav-links {
+        display: none;
+      }
+      .section-header {
+        margin-bottom: 2.5rem;
+      }
+      .glass-card {
+        padding: 1.5rem;
+      }
+      section {
+        padding: 4rem 1rem;
+      }
     }
   </style>
 </head>
 <body>
 
-  <!-- Background 3D Canvas -->
+  <!-- Background 3D Canvas (Cinematic Space & Black Hole) -->
   <canvas id="bg-canvas"></canvas>
-  <div class="ambient-glow"></div>
 
   <!-- Navigation Bar -->
   <nav>
     <a href="#" class="logo gold-text">NOTHING</a>
-    <div class="nav-right">
+    <div class="nav-controls">
       <ul class="nav-links">
         <li><a href="#about" data-en="Identity" data-ar="الهوية">Identity</a></li>
         <li><a href="#expertise" data-en="Mastery" data-ar="الخبرات">Mastery</a></li>
@@ -425,7 +415,14 @@
         <li><a href="#psyche" data-en="Mindset" data-ar="العقلية">Mindset</a></li>
         <li><a href="#contact" data-en="Connect" data-ar="التواصل">Connect</a></li>
       </ul>
-      <button class="lang-btn" id="lang-toggle" onclick="toggleLanguage()">
+      
+      <!-- Theme Toggle Switch Button -->
+      <button class="control-btn" onclick="toggleTheme()" id="theme-toggle">
+        <i class="fa-solid fa-moon"></i>
+      </button>
+
+      <!-- Language Toggle Switch Button -->
+      <button class="control-btn" id="lang-toggle" onclick="toggleLanguage()">
         <i class="fa-solid fa-globe"></i> <span id="lang-text">العربية</span>
       </button>
     </div>
@@ -454,7 +451,7 @@
       <div class="glass-card reveal">
         <div id="canvas-identity" class="canvas-container"></div>
         <div class="about-text">
-          <h3 class="gold-text" style="margin-bottom: 1rem;" data-en="Mind & Legacy" data-ar="العقل والإرث">Mind & Legacy</h3>
+          <h3 class="gold-text" style="margin-bottom: 0.8rem;" data-en="Mind & Legacy" data-ar="العقل والإرث">Mind & Legacy</h3>
           <p data-en="An ambitious vision rooted in ancient soil. Driven by relentless intellectual curiosity, mastering complex architectures of the physical, digital, and analytical domains." data-ar="رؤية طموحة تجذرت في أرض الحضارات. مدفوع بشغف لا ينتهي للتعلم، ومتمكن من أرقام وإحداثيات العالم الرقمي والتحليلي.">
             An ambitious vision rooted in ancient soil. Driven by relentless intellectual curiosity, mastering complex architectures of the physical, digital, and analytical domains.
           </p>
@@ -470,7 +467,7 @@
       <div class="glass-card reveal">
         <div id="canvas-allegiance" class="canvas-container"></div>
         <div class="about-text">
-          <h3 class="gold-text" style="margin-bottom: 1rem;" data-en="Core Allegiance" data-ar="الانتماء المطلق">Core Allegiance</h3>
+          <h3 class="gold-text" style="margin-bottom: 0.8rem;" data-en="Core Allegiance" data-ar="الانتماء المطلق">Core Allegiance</h3>
           <p data-en="Sovereignty above all. Absolute devotion to national allegiance, fortified by an impenetrable psychological layer. Easy to adapt, impossible to manipulate." data-ar="الوطن والسيادة فوق كل شيء. انتماء وثبات لا يتزعزع، محصن بجدار نفسي ناضج. سهل التكيف والاندماج، صعب التلاعب والاقناع.">
             Sovereignty above all. Absolute devotion to national allegiance, fortified by an impenetrable psychological layer. Easy to adapt, impossible to manipulate.
           </p>
@@ -492,28 +489,28 @@
     </div>
 
     <div class="grid-3d">
-      <div class="glass-card skill-card card-3d-wrapper reveal">
+      <div class="glass-card reveal">
         <div id="canvas-visual" class="canvas-container"></div>
-        <h3 data-en="Visual & Graphic Engineering" data-ar="تصميم الصور والجرافيك">Visual & Graphic Engineering</h3>
-        <p data-en="Image Design, Graphic Architecture, and Cinematic Photography. Crafting high-impact aesthetic realities." data-ar="تصميم الصور، الجرافيك، والتصوير الفوتوغرافي عالي الدقة لتجسيد الهيبة البصرية.">Image Design, Graphic Architecture, and Cinematic Photography. Crafting high-impact aesthetic realities.</p>
+        <h3 data-en="Visual & Graphic Engineering" data-ar="تصميم الصور والجرافيك" style="margin-bottom: 0.5rem;">Visual & Graphic Engineering</h3>
+        <p style="color: var(--text-main); font-size: 0.95rem; font-weight: 500;" data-en="Image Design, Graphic Architecture, and Cinematic Photography. Crafting high-impact aesthetic realities." data-ar="تصميم الصور، الجرافيك، والتصوير الفوتوغرافي عالي الدقة لتجسيد الهيبة البصرية.">Image Design, Graphic Architecture, and Cinematic Photography. Crafting high-impact aesthetic realities.</p>
       </div>
 
-      <div class="glass-card skill-card card-3d-wrapper reveal">
+      <div class="glass-card reveal">
         <div id="canvas-cinema" class="canvas-container"></div>
-        <h3 data-en="Cinematography & Motion" data-ar="الإخراج والتصوير السينمائي">Cinematography & Motion</h3>
-        <p data-en="Cinematic Video Direction, High-End Video Production, and Advanced Post-Production Editing." data-ar="تصوير ومونتاج الفيديو السينمائي باحترافية عالية مع معالجة وتحرير المادة البصرية.">Cinematic Video Direction, High-End Video Production, and Advanced Post-Production Editing.</p>
+        <h3 data-en="Cinematography & Motion" data-ar="الإخراج والتصوير السينمائي" style="margin-bottom: 0.5rem;">Cinematography & Motion</h3>
+        <p style="color: var(--text-main); font-size: 0.95rem; font-weight: 500;" data-en="Cinematic Video Direction, High-End Video Production, and Advanced Post-Production Editing." data-ar="تصوير ومونتاج الفيديو السينمائي باحترافية عالية مع معالجة وتحرير المادة البصرية.">Cinematic Video Direction, High-End Video Production, and Advanced Post-Production Editing.</p>
       </div>
 
-      <div class="glass-card skill-card card-3d-wrapper reveal">
+      <div class="glass-card reveal">
         <div id="canvas-ai" class="canvas-container"></div>
-        <h3 data-en="Artificial Intelligence & Tech" data-ar="الذكاء الاصطناعي والبرمجة">Artificial Intelligence & Tech</h3>
-        <p data-en="AI Specialist, Full-Stack Developer, and C++ / JavaScript System Architect." data-ar="خبير ذكاء اصطناعي، مبرمج ومطور أنظمة بلغات C++ و JavaScript.">AI Specialist, Full-Stack Developer, and C++ / JavaScript System Architect.</p>
+        <h3 data-en="Artificial Intelligence & Tech" data-ar="الذكاء الاصطناعي والبرمجة" style="margin-bottom: 0.5rem;">Artificial Intelligence & Tech</h3>
+        <p style="color: var(--text-main); font-size: 0.95rem; font-weight: 500;" data-en="AI Specialist, Full-Stack Developer, and C++ / JavaScript System Architect." data-ar="خبير ذكاء اصطناعي، مبرمج ومطور أنظمة بلغات C++ و JavaScript.">AI Specialist, Full-Stack Developer, and C++ / JavaScript System Architect.</p>
       </div>
 
-      <div class="glass-card skill-card card-3d-wrapper reveal">
+      <div class="glass-card reveal">
         <div id="canvas-intel" class="canvas-container"></div>
-        <h3 data-en="Intelligence & Reconnaissance" data-ar="البحث والتحري الرقمي">Intelligence & Reconnaissance</h3>
-        <p data-en="OSINT Specialist, Advanced Research Specialist, and Information Extraction Operations." data-ar="خبير بعمليات البحث والتحري، وجمع المعلومات الدقيقة وتفكيك البيانات.">OSINT Specialist, Advanced Research Specialist, and Information Extraction Operations.</p>
+        <h3 data-en="Intelligence & Reconnaissance" data-ar="البحث والتحري الرقمي" style="margin-bottom: 0.5rem;">Intelligence & Reconnaissance</h3>
+        <p style="color: var(--text-main); font-size: 0.95rem; font-weight: 500;" data-en="OSINT Specialist, Advanced Research Specialist, and Information Extraction Operations." data-ar="خبير بعمليات البحث والتحري، وجمع المعلومات الدقيقة وتفكيك البيانات.">OSINT Specialist, Advanced Research Specialist, and Information Extraction Operations.</p>
       </div>
     </div>
   </section>
@@ -526,40 +523,40 @@
     </div>
 
     <div class="grid-3d">
-      <div class="glass-card domain-item card-3d-wrapper reveal">
+      <div class="glass-card reveal">
         <div id="canvas-space" class="canvas-container"></div>
-        <h3 class="gold-text" data-en="Astrophysics & Space" data-ar="علم الفضاء">Astrophysics & Space</h3>
-        <p data-en="Deciphering the celestial mechanics of the cosmos and interstellar phenomena." data-ar="استكشاف أعماق الكون، الفيزياء الفلكية وحركة الأجرام السماوية.">Deciphering the celestial mechanics of the cosmos and interstellar phenomena.</p>
+        <h3 class="gold-text" data-en="Astrophysics & Space" data-ar="علم الفضاء" style="margin-bottom: 0.5rem;">Astrophysics & Space</h3>
+        <p style="color: var(--text-main); font-size: 0.95rem; font-weight: 500;" data-en="Deciphering the celestial mechanics of the cosmos and interstellar phenomena." data-ar="استكشاف أعماق الكون، الفيزياء الفلكية وحركة الأجرام السماوية.">Deciphering the celestial mechanics of the cosmos and interstellar phenomena.</p>
       </div>
 
-      <div class="glass-card domain-item card-3d-wrapper reveal">
+      <div class="glass-card reveal">
         <div id="canvas-history" class="canvas-container"></div>
-        <h3 class="gold-text" data-en="Ancient History" data-ar="التاريخ الإنساني">Ancient History</h3>
-        <p data-en="Studying power dynamics, empires, and the origin of human civilization." data-ar="دراسة موازين القوى، الحضارات القديمة وأصول التاريخ.">Studying power dynamics, empires, and the origin of human civilization.</p>
+        <h3 class="gold-text" data-en="Ancient History" data-ar="التاريخ الإنساني" style="margin-bottom: 0.5rem;">Ancient History</h3>
+        <p style="color: var(--text-main); font-size: 0.95rem; font-weight: 500;" data-en="Studying power dynamics, empires, and the origin of human civilization." data-ar="دراسة موازين القوى، الحضارات القديمة وأصول التاريخ.">Studying power dynamics, empires, and the origin of human civilization.</p>
       </div>
 
-      <div class="glass-card domain-item card-3d-wrapper reveal">
+      <div class="glass-card reveal">
         <div id="canvas-nuclear" class="canvas-container"></div>
-        <h3 class="gold-text" data-en="Nuclear & Physics" data-ar="الكيمياء والفيزياء">Nuclear & Physics</h3>
-        <p data-en="Exploring Nuclear Chemistry and High-Voltage Electrical Physics." data-ar="شغف بعلم الكيمياء النووية والفيزياء الكهربائية عالية الطاقة.">Exploring Nuclear Chemistry and High-Voltage Electrical Physics.</p>
+        <h3 class="gold-text" data-en="Nuclear & Physics" data-ar="الكيمياء والفيزياء" style="margin-bottom: 0.5rem;">Nuclear & Physics</h3>
+        <p style="color: var(--text-main); font-size: 0.95rem; font-weight: 500;" data-en="Exploring Nuclear Chemistry and High-Voltage Electrical Physics." data-ar="شغف بعلم الكيمياء النووية والفيزياء الكهربائية عالية الطاقة.">Exploring Nuclear Chemistry and High-Voltage Electrical Physics.</p>
       </div>
 
-      <div class="glass-card domain-item card-3d-wrapper reveal">
+      <div class="glass-card reveal">
         <div id="canvas-engineering" class="canvas-container"></div>
-        <h3 class="gold-text" data-en="Computer & Mechatronics" data-ar="هندسة الحاسوب والميكاترونكس">Computer & Mechatronics</h3>
-        <p data-en="System Architecture, Hardware Systems, and Robotics Automation." data-ar="هندسة الحاسبة، الميكاترونكس، والروبوتات المتقدمة.">System Architecture, Hardware Systems, and Robotics Automation.</p>
+        <h3 class="gold-text" data-en="Computer & Mechatronics" data-ar="هندسة الحاسوب والميكاترونكس" style="margin-bottom: 0.5rem;">Computer & Mechatronics</h3>
+        <p style="color: var(--text-main); font-size: 0.95rem; font-weight: 500;" data-en="System Architecture, Hardware Systems, and Robotics Automation." data-ar="هندسة الحاسبة، الميكاترونكس، والروبوتات المتقدمة.">System Architecture, Hardware Systems, and Robotics Automation.</p>
       </div>
 
-      <div class="glass-card domain-item card-3d-wrapper reveal">
+      <div class="glass-card reveal">
         <div id="canvas-strategic" class="canvas-container"></div>
-        <h3 class="gold-text" data-en="Strategic Intelligence" data-ar="مجال الاستخبارات">Strategic Intelligence</h3>
-        <p data-en="Analysis of state intelligence frameworks and geopolitical covert mechanics." data-ar="اهتمام واسع في مجال المخابرات والاستخبارات وتحليل الاستراتيجيات.">Analysis of state intelligence frameworks and geopolitical covert mechanics.</p>
+        <h3 class="gold-text" data-en="Strategic Intelligence" data-ar="مجال الاستخبارات" style="margin-bottom: 0.5rem;">Strategic Intelligence</h3>
+        <p style="color: var(--text-main); font-size: 0.95rem; font-weight: 500;" data-en="Analysis of state intelligence frameworks and geopolitical covert mechanics." data-ar="اهتمام واسع في مجال المخابرات والاستخبارات وتحليل الاستراتيجيات.">Analysis of state intelligence frameworks and geopolitical covert mechanics.</p>
       </div>
 
-      <div class="glass-card domain-item card-3d-wrapper reveal">
+      <div class="glass-card reveal">
         <div id="canvas-automotive" class="canvas-container"></div>
-        <h3 class="gold-text" data-en="Automotive Mechanics" data-ar="عالم السيارات">Automotive Mechanics</h3>
-        <p data-en="High-performance combustion engineering, aerodynamics, and vehicular dynamics." data-ar="هندسة المحركات والميكانيكا عالية الأداء في عالم السيارات.">High-performance combustion engineering, aerodynamics, and vehicular dynamics.</p>
+        <h3 class="gold-text" data-en="Automotive Mechanics" data-ar="عالم السيارات" style="margin-bottom: 0.5rem;">Automotive Mechanics</h3>
+        <p style="color: var(--text-main); font-size: 0.95rem; font-weight: 500;" data-en="High-performance combustion engineering, aerodynamics, and vehicular dynamics." data-ar="هندسة المحركات والميكانيكا عالية الأداء في عالم السيارات.">High-performance combustion engineering, aerodynamics, and vehicular dynamics.</p>
       </div>
     </div>
   </section>
@@ -589,7 +586,7 @@
     </div>
   </section>
 
-  <!-- Contact & Social Links Section -->
+  <!-- Contact Section -->
   <section id="contact">
     <div class="section-header reveal">
       <p data-en="ESTABLISH CONNECTION" data-ar="قنوات التواصل">ESTABLISH CONNECTION</p>
@@ -617,8 +614,19 @@
     <p data-en="© NOTHING STUDIO. ALL RIGHTS RESERVED. MESOPOTAMIAN LEGACY." data-ar="© ستوديو NOTHING. جميع الحقوق محفوظة. إرث بلاد الرافدين.">© NOTHING STUDIO. ALL RIGHTS RESERVED. MESOPOTAMIAN LEGACY.</p>
   </footer>
 
-  <!-- ==================== THREE.JS & TRANSLATION ENGINE ==================== -->
+  <!-- ==================== CINEMATIC & 3D JAVASCRIPT ENGINE ==================== -->
   <script>
+    // --- Dark & Light Mode Toggle ---
+    function toggleTheme() {
+      const html = document.documentElement;
+      const themeBtn = document.getElementById('theme-toggle');
+      const isDark = html.getAttribute('data-theme') === 'dark';
+      
+      const newTheme = isDark ? 'light' : 'dark';
+      html.setAttribute('data-theme', newTheme);
+      themeBtn.innerHTML = isDark ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
+    }
+
     // --- Language Switcher Functionality ---
     let currentLang = 'en';
 
@@ -636,68 +644,90 @@
       });
     }
 
-    // --- Scroll Reveal Animation ---
-    const observerOptions = { threshold: 0.15 };
+    // --- Cinematic Scroll Animations ---
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           entry.target.classList.add('active');
         }
       });
-    }, observerOptions);
+    }, { threshold: 0.12 });
 
     document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-    // --- Background Ambient 3D Scene ---
+    // --- 3D Space Background & Black Hole (Three.js Cinematic Engine) ---
     const bgCanvas = document.getElementById('bg-canvas');
     const bgScene = new THREE.Scene();
-    const bgCamera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const bgCamera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
     const bgRenderer = new THREE.WebGLRenderer({ canvas: bgCanvas, alpha: true, antialias: true });
     
     bgRenderer.setSize(window.innerWidth, window.innerHeight);
     bgRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-    const particlesCount = 300;
-    const posArray = new Float32Array(particlesCount * 3);
+    // Starfield Particles
+    const starsCount = 1200;
+    const starsGeometry = new THREE.BufferGeometry();
+    const starsPos = new Float32Array(starsCount * 3);
 
-    for (let i = 0; i < particlesCount * 3; i++) {
-      posArray[i] = (Math.random() - 0.5) * 20;
+    for (let i = 0; i < starsCount * 3; i++) {
+      starsPos[i] = (Math.random() - 0.5) * 35;
     }
 
-    const particlesGeometry = new THREE.BufferGeometry();
-    particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-
-    const particlesMaterial = new THREE.PointsMaterial({
-      size: 0.03,
-      color: 0xD4AF37,
+    starsGeometry.setAttribute('position', new THREE.BufferAttribute(starsPos, 3));
+    const starsMaterial = new THREE.PointsMaterial({
+      size: 0.025,
+      color: 0xffffff,
       transparent: true,
-      opacity: 0.6
+      opacity: 0.9
     });
+    const starField = new THREE.Points(starsGeometry, starsMaterial);
+    bgScene.add(starField);
 
-    const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
-    bgScene.add(particlesMesh);
+    // Black Hole & Accretion Disk Group
+    const blackHoleGroup = new THREE.Group();
 
-    bgCamera.position.z = 5;
+    const holeGeo = new THREE.SphereGeometry(1.3, 32, 32);
+    const holeMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
+    const blackHoleMesh = new THREE.Mesh(holeGeo, holeMat);
+    blackHoleGroup.add(blackHoleMesh);
 
-    let mouseX = 0;
-    let mouseY = 0;
+    const diskGeo = new THREE.RingGeometry(1.5, 3.5, 64);
+    const diskMat = new THREE.MeshBasicMaterial({
+      color: 0xD4AF37,
+      side: THREE.DoubleSide,
+      transparent: true,
+      opacity: 0.85,
+      wireframe: true
+    });
+    const accretionDisk = new THREE.Mesh(diskGeo, diskMat);
+    accretionDisk.rotation.x = Math.PI / 2.2;
+    blackHoleGroup.add(accretionDisk);
 
+    blackHoleGroup.position.set(0, 0, -2.5);
+    bgScene.add(blackHoleGroup);
+
+    bgCamera.position.z = 6;
+
+    // Mouse Cinematic Parallax
+    let mouseX = 0, mouseY = 0;
     window.addEventListener('mousemove', (e) => {
       mouseX = (e.clientX / window.innerWidth) - 0.5;
       mouseY = (e.clientY / window.innerHeight) - 0.5;
     });
 
-    function animateBg() {
-      requestAnimationFrame(animateBg);
-      particlesMesh.rotation.y += 0.001;
-      particlesMesh.rotation.x += 0.0005;
+    function animateSpace() {
+      requestAnimationFrame(animateSpace);
 
-      bgCamera.position.x += (mouseX * 0.5 - bgCamera.position.x) * 0.05;
-      bgCamera.position.y += (-mouseY * 0.5 - bgCamera.position.y) * 0.05;
+      accretionDisk.rotation.z += 0.006;
+      starField.rotation.y += 0.0004;
+
+      bgCamera.position.x += (mouseX * 0.9 - bgCamera.position.x) * 0.05;
+      bgCamera.position.y += (-mouseY * 0.9 - bgCamera.position.y) * 0.05;
+      bgCamera.lookAt(bgScene.position);
 
       bgRenderer.render(bgScene, bgCamera);
     }
-    animateBg();
+    animateSpace();
 
     window.addEventListener('resize', () => {
       bgCamera.aspect = window.innerWidth / window.innerHeight;
@@ -705,7 +735,7 @@
       bgRenderer.setSize(window.innerWidth, window.innerHeight);
     });
 
-    // --- Helper Function to Create 3D Canvas Cards ---
+    // --- Interactive 3D Card Models Generator ---
     function create3DCardCanvas(containerId, meshType) {
       const container = document.getElementById(containerId);
       if (!container) return;
@@ -718,10 +748,10 @@
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
       container.appendChild(renderer.domElement);
 
-      const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
       scene.add(ambientLight);
 
-      const pointLight = new THREE.PointLight(0xD4AF37, 2, 50);
+      const pointLight = new THREE.PointLight(0xD4AF37, 2.5, 50);
       pointLight.position.set(5, 5, 5);
       scene.add(pointLight);
 
@@ -729,69 +759,44 @@
         color: 0xD4AF37,
         metalness: 0.9,
         roughness: 0.2,
-        wireframe: meshType === 'wireframe' || meshType === 'space' || meshType === 'intel'
+        wireframe: meshType === 'space' || meshType === 'intel'
       });
 
       let mesh;
-
       switch(meshType) {
-        case 'identity':
-          mesh = new THREE.Mesh(new THREE.IcosahedronGeometry(1.2, 0), goldMaterial);
+        case 'identity': mesh = new THREE.Mesh(new THREE.IcosahedronGeometry(1.1, 0), goldMaterial); break;
+        case 'allegiance': mesh = new THREE.Mesh(new THREE.OctahedronGeometry(1.2, 0), goldMaterial); break;
+        case 'visual': mesh = new THREE.Mesh(new THREE.TorusGeometry(0.9, 0.3, 16, 100), goldMaterial); break;
+        case 'cinema': mesh = new THREE.Mesh(new THREE.CylinderGeometry(0.7, 0.7, 1.4, 32), goldMaterial); break;
+        case 'ai': mesh = new THREE.Mesh(new THREE.DodecahedronGeometry(1, 0), goldMaterial); break;
+        case 'intel': mesh = new THREE.Mesh(new THREE.SphereGeometry(1.1, 16, 16), goldMaterial); break;
+        case 'space': mesh = new THREE.Mesh(new THREE.TorusKnotGeometry(0.7, 0.2, 100, 16), goldMaterial); break;
+        case 'history': mesh = new THREE.Mesh(new THREE.ConeGeometry(0.9, 1.5, 4), goldMaterial); break;
+        case 'nuclear': 
+          mesh = new THREE.Mesh(new THREE.TorusGeometry(0.8, 0.15, 16, 50), goldMaterial);
+          mesh.add(new THREE.Mesh(new THREE.SphereGeometry(0.35, 16, 16), goldMaterial));
           break;
-        case 'allegiance':
-          mesh = new THREE.Mesh(new THREE.OctahedronGeometry(1.3, 0), goldMaterial);
-          break;
-        case 'visual':
-          mesh = new THREE.Mesh(new THREE.TorusGeometry(1, 0.3, 16, 100), goldMaterial);
-          break;
-        case 'cinema':
-          mesh = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 0.8, 1.5, 32), goldMaterial);
-          break;
-        case 'ai':
-          mesh = new THREE.Mesh(new THREE.DodecahedronGeometry(1.1, 0), goldMaterial);
-          break;
-        case 'intel':
-          mesh = new THREE.Mesh(new THREE.SphereGeometry(1.2, 16, 16), goldMaterial);
-          break;
-        case 'space':
-          mesh = new THREE.Mesh(new THREE.TorusKnotGeometry(0.8, 0.2, 100, 16), goldMaterial);
-          break;
-        case 'history':
-          mesh = new THREE.Mesh(new THREE.ConeGeometry(1, 1.6, 4), goldMaterial);
-          break;
-        case 'nuclear':
-          mesh = new THREE.Mesh(new THREE.TorusGeometry(0.9, 0.15, 16, 50), goldMaterial);
-          const core = new THREE.Mesh(new THREE.SphereGeometry(0.4, 16, 16), goldMaterial);
-          mesh.add(core);
-          break;
-        case 'engineering':
-          mesh = new THREE.Mesh(new THREE.BoxGeometry(1.3, 1.3, 1.3), goldMaterial);
-          break;
-        case 'strategic':
-          mesh = new THREE.Mesh(new THREE.TetrahedronGeometry(1.3, 0), goldMaterial);
-          break;
-        case 'automotive':
-          mesh = new THREE.Mesh(new THREE.RingGeometry(0.5, 1.1, 32), goldMaterial);
-          break;
-        default:
-          mesh = new THREE.Mesh(new THREE.SphereGeometry(1, 32, 32), goldMaterial);
+        case 'engineering': mesh = new THREE.Mesh(new THREE.BoxGeometry(1.1, 1.1, 1.1), goldMaterial); break;
+        case 'strategic': mesh = new THREE.Mesh(new THREE.TetrahedronGeometry(1.2, 0), goldMaterial); break;
+        case 'automotive': mesh = new THREE.Mesh(new THREE.RingGeometry(0.4, 1, 32), goldMaterial); break;
+        default: mesh = new THREE.Mesh(new THREE.SphereGeometry(1, 32, 32), goldMaterial);
       }
 
       scene.add(mesh);
-      camera.position.z = 3.5;
+      camera.position.z = 3.2;
 
       let isHovered = false;
       container.addEventListener('mouseenter', () => isHovered = true);
       container.addEventListener('mouseleave', () => isHovered = false);
 
-      function animate() {
-        requestAnimationFrame(animate);
-        const speed = isHovered ? 0.03 : 0.008;
+      function animateCard() {
+        requestAnimationFrame(animateCard);
+        const speed = isHovered ? 0.03 : 0.009;
         mesh.rotation.x += speed;
         mesh.rotation.y += speed * 0.8;
         renderer.render(scene, camera);
       }
-      animate();
+      animateCard();
 
       window.addEventListener('resize', () => {
         if (!container) return;
@@ -801,7 +806,7 @@
       });
     }
 
-    // Initialize 3D Visual Models
+    // Initialize Card Canvas Models
     window.addEventListener('DOMContentLoaded', () => {
       create3DCardCanvas('canvas-identity', 'identity');
       create3DCardCanvas('canvas-allegiance', 'allegiance');
