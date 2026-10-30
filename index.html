@@ -15,34 +15,34 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
   <style>
-    /* ==================== CORE & LUXURY THEMES ==================== */
+    /* ==================== CLEAN SOLID & GLOW THEME ==================== */
     :root {
-      --bg-base: #030305;
-      --glass-bg: rgba(15, 16, 22, 0.7);
-      --glass-border: rgba(212, 175, 55, 0.3);
+      --bg-base: #050508;
+      --glass-bg: rgba(14, 15, 22, 0.75);
+      --glass-border: rgba(212, 175, 55, 0.28);
       --glass-glow: rgba(212, 175, 55, 0.12);
       
       --gold-primary: #D4AF37;
       --gold-light: #F3E5AB;
       --gold-dark: #AA7C11;
       --text-main: #FFFFFF;
-      --text-muted: #B3B7C5;
+      --text-muted: #9EA3B0;
 
       --font-display: 'Cinzel', serif;
       --font-body: 'Plus Jakarta Sans', sans-serif;
     }
 
     [data-theme="light"] {
-      --bg-base: #e6e8ec;
-      --glass-bg: rgba(255, 255, 255, 0.8);
-      --glass-border: rgba(170, 124, 17, 0.35);
+      --bg-base: #F4F5F7;
+      --glass-bg: rgba(255, 255, 255, 0.85);
+      --glass-border: rgba(170, 124, 17, 0.3);
       --glass-glow: rgba(212, 175, 55, 0.2);
       
-      --gold-primary: #99710F;
+      --gold-primary: #8B6508;
       --gold-light: #664A04;
       --gold-dark: #4A3402;
-      --text-main: #0B0C10;
-      --text-muted: #333642;
+      --text-main: #121318;
+      --text-muted: #4A4D57;
     }
 
     [dir="rtl"] {
@@ -63,18 +63,24 @@
       font-family: var(--font-body);
       overflow-x: hidden;
       line-height: 1.7;
-      transition: background-color 0.4s ease, color 0.4s ease;
+      transition: background-color 0.5s ease, color 0.5s ease;
+      position: relative;
     }
 
-    /* Background 3D Canvas */
-    #bg-canvas {
+    /* Random Pulsing Glow Effect Background */
+    .random-glow {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: -1;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 60vw;
+      height: 60vh;
+      background: radial-gradient(circle, rgba(212, 175, 55, 0.12) 0%, rgba(0, 0, 0, 0) 70%);
       pointer-events: none;
+      z-index: -1;
+      opacity: 0.2;
+      transition: opacity 4s ease-in-out;
+      filter: blur(60px);
     }
 
     /* Typography Utilities */
@@ -106,10 +112,10 @@
     .glass-card:hover {
       border-color: rgba(212, 175, 55, 0.6);
       transform: translateY(-6px);
-      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), inset 0 0 25px rgba(212, 175, 55, 0.25);
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), inset 0 0 25px rgba(212, 175, 55, 0.2);
     }
 
-    /* Cinematic Fade-In Animation */
+    /* Fade-In Animation */
     .reveal {
       opacity: 0;
       transform: translateY(35px);
@@ -139,6 +145,7 @@
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       border: 1px solid var(--glass-border);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     }
 
     .logo {
@@ -246,7 +253,7 @@
       font-weight: 500;
     }
 
-    /* ==================== SECTIONS COMMON ==================== */
+    /* ==================== SECTIONS ==================== */
     section {
       padding: 6rem 1.5rem;
       max-width: 1300px;
@@ -282,11 +289,10 @@
       border-radius: 12px;
       overflow: hidden;
       margin-bottom: 1.2rem;
-      background: rgba(0, 0, 0, 0.2);
+      background: rgba(0, 0, 0, 0.15);
       border: 1px solid var(--glass-border);
     }
 
-    /* ==================== IDENTITY SECTION ==================== */
     .about-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -312,7 +318,6 @@
       font-weight: 700;
     }
 
-    /* ==================== PSYCHE & INTEL ==================== */
     .psyche-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -343,7 +348,6 @@
       font-weight: 500;
     }
 
-    /* ==================== SOCIAL & FOOTER ==================== */
     .social-links {
       display: flex;
       justify-content: center;
@@ -379,30 +383,19 @@
       font-weight: 700;
     }
 
-    /* ==================== RESPONSIVE DESIGN (MOBILE & TABLETS) ==================== */
     @media (max-width: 868px) {
-      nav {
-        padding: 0.6rem 1rem;
-      }
-      .nav-links {
-        display: none;
-      }
-      .section-header {
-        margin-bottom: 2.5rem;
-      }
-      .glass-card {
-        padding: 1.5rem;
-      }
-      section {
-        padding: 4rem 1rem;
-      }
+      nav { padding: 0.6rem 1rem; }
+      .nav-links { display: none; }
+      .section-header { margin-bottom: 2.5rem; }
+      .glass-card { padding: 1.5rem; }
+      section { padding: 4rem 1rem; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Background 3D Canvas (Cinematic Space & Black Hole) -->
-  <canvas id="bg-canvas"></canvas>
+  <!-- Background Random Pulsing Glow Effect -->
+  <div class="random-glow" id="randomGlow"></div>
 
   <!-- Navigation Bar -->
   <nav>
@@ -614,8 +607,24 @@
     <p data-en="© NOTHING STUDIO. ALL RIGHTS RESERVED. MESOPOTAMIAN LEGACY." data-ar="© ستوديو NOTHING. جميع الحقوق محفوظة. إرث بلاد الرافدين.">© NOTHING STUDIO. ALL RIGHTS RESERVED. MESOPOTAMIAN LEGACY.</p>
   </footer>
 
-  <!-- ==================== CINEMATIC & 3D JAVASCRIPT ENGINE ==================== -->
+  <!-- ==================== JAVASCRIPT ENGINE ==================== -->
   <script>
+    // --- Random Glowing Pulse Effect ---
+    const glowElement = document.getElementById('randomGlow');
+    function triggerRandomGlow() {
+      const randomOpacity = Math.random() * 0.35 + 0.05; // Opacity between 0.05 and 0.4
+      const randomX = Math.random() * 40 - 20; // Slight position shift
+      const randomY = Math.random() * 40 - 20;
+      
+      glowElement.style.opacity = randomOpacity;
+      glowElement.style.transform = `translate(calc(-50% + ${randomX}vw), calc(-50% + ${randomY}vh))`;
+      
+      // Random interval for next pulse change (between 2 to 5 seconds)
+      const nextTime = Math.random() * 3000 + 2000;
+      setTimeout(triggerRandomGlow, nextTime);
+    }
+    triggerRandomGlow();
+
     // --- Dark & Light Mode Toggle ---
     function toggleTheme() {
       const html = document.documentElement;
@@ -627,9 +636,8 @@
       themeBtn.innerHTML = isDark ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
     }
 
-    // --- Language Switcher Functionality ---
+    // --- Language Switcher ---
     let currentLang = 'en';
-
     function toggleLanguage() {
       const html = document.documentElement;
       const langText = document.getElementById('lang-text');
@@ -644,96 +652,16 @@
       });
     }
 
-    // --- Cinematic Scroll Animations ---
+    // --- Scroll Observer ---
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           entry.target.classList.add('active');
         }
       });
-    }, { threshold: 0.12 });
+    }, { threshold: 0.1 });
 
     document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-
-    // --- 3D Space Background & Black Hole (Three.js Cinematic Engine) ---
-    const bgCanvas = document.getElementById('bg-canvas');
-    const bgScene = new THREE.Scene();
-    const bgCamera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const bgRenderer = new THREE.WebGLRenderer({ canvas: bgCanvas, alpha: true, antialias: true });
-    
-    bgRenderer.setSize(window.innerWidth, window.innerHeight);
-    bgRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-    // Starfield Particles
-    const starsCount = 1200;
-    const starsGeometry = new THREE.BufferGeometry();
-    const starsPos = new Float32Array(starsCount * 3);
-
-    for (let i = 0; i < starsCount * 3; i++) {
-      starsPos[i] = (Math.random() - 0.5) * 35;
-    }
-
-    starsGeometry.setAttribute('position', new THREE.BufferAttribute(starsPos, 3));
-    const starsMaterial = new THREE.PointsMaterial({
-      size: 0.025,
-      color: 0xffffff,
-      transparent: true,
-      opacity: 0.9
-    });
-    const starField = new THREE.Points(starsGeometry, starsMaterial);
-    bgScene.add(starField);
-
-    // Black Hole & Accretion Disk Group
-    const blackHoleGroup = new THREE.Group();
-
-    const holeGeo = new THREE.SphereGeometry(1.3, 32, 32);
-    const holeMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
-    const blackHoleMesh = new THREE.Mesh(holeGeo, holeMat);
-    blackHoleGroup.add(blackHoleMesh);
-
-    const diskGeo = new THREE.RingGeometry(1.5, 3.5, 64);
-    const diskMat = new THREE.MeshBasicMaterial({
-      color: 0xD4AF37,
-      side: THREE.DoubleSide,
-      transparent: true,
-      opacity: 0.85,
-      wireframe: true
-    });
-    const accretionDisk = new THREE.Mesh(diskGeo, diskMat);
-    accretionDisk.rotation.x = Math.PI / 2.2;
-    blackHoleGroup.add(accretionDisk);
-
-    blackHoleGroup.position.set(0, 0, -2.5);
-    bgScene.add(blackHoleGroup);
-
-    bgCamera.position.z = 6;
-
-    // Mouse Cinematic Parallax
-    let mouseX = 0, mouseY = 0;
-    window.addEventListener('mousemove', (e) => {
-      mouseX = (e.clientX / window.innerWidth) - 0.5;
-      mouseY = (e.clientY / window.innerHeight) - 0.5;
-    });
-
-    function animateSpace() {
-      requestAnimationFrame(animateSpace);
-
-      accretionDisk.rotation.z += 0.006;
-      starField.rotation.y += 0.0004;
-
-      bgCamera.position.x += (mouseX * 0.9 - bgCamera.position.x) * 0.05;
-      bgCamera.position.y += (-mouseY * 0.9 - bgCamera.position.y) * 0.05;
-      bgCamera.lookAt(bgScene.position);
-
-      bgRenderer.render(bgScene, bgCamera);
-    }
-    animateSpace();
-
-    window.addEventListener('resize', () => {
-      bgCamera.aspect = window.innerWidth / window.innerHeight;
-      bgCamera.updateProjectionMatrix();
-      bgRenderer.setSize(window.innerWidth, window.innerHeight);
-    });
 
     // --- Interactive 3D Card Models Generator ---
     function create3DCardCanvas(containerId, meshType) {
@@ -748,10 +676,10 @@
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
       container.appendChild(renderer.domElement);
 
-      const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
       scene.add(ambientLight);
 
-      const pointLight = new THREE.PointLight(0xD4AF37, 2.5, 50);
+      const pointLight = new THREE.PointLight(0xD4AF37, 2, 50);
       pointLight.position.set(5, 5, 5);
       scene.add(pointLight);
 
@@ -806,7 +734,7 @@
       });
     }
 
-    // Initialize Card Canvas Models
+    // Initialize Card Models
     window.addEventListener('DOMContentLoaded', () => {
       create3DCardCanvas('canvas-identity', 'identity');
       create3DCardCanvas('canvas-allegiance', 'allegiance');
