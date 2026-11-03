@@ -1,916 +1,194 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr" data-theme="dark">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NOTHING | NOTHING Studio</title>
-
-  <!-- Google Fonts & Font Awesome Icons -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Plus+Jakarta+Sans:wght@400;500;700&family=Cairo:wght@500;700;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-  <!-- Three.js Library -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-
-  <style>
-    /* ==================== CORE & LUXURY THEMES ==================== */
-    :root {
-      --bg-base: #010103;
-      --glass-bg: rgba(10, 11, 16, 0.85); /* زيادة التعتيم قليلاً للوضوح */
-      --glass-border: rgba(212, 175, 55, 0.35);
-      --glass-glow: rgba(212, 175, 55, 0.15);
-      
-      --gold-primary: #D4AF37;
-      --gold-light: #FFEA9F;
-      --gold-dark: #7A5B0B;
-      --text-main: #FFFFFF;
-      --text-muted: #D1D5DB;
-
-      --font-display: 'Cinzel', serif;
-      --font-body: 'Plus Jakarta Sans', sans-serif;
-
-      --cinematic-shadow: 0 30px 60px rgba(0, 0, 0, 0.95), 0 0 40px rgba(212, 175, 55, 0.15);
-    }
-
-    [data-theme="light"] {
-      --bg-base: #E2E5EC;
-      --glass-bg: rgba(255, 255, 255, 0.92);
-      --glass-border: rgba(170, 124, 17, 0.4);
-      --glass-glow: rgba(212, 175, 55, 0.2);
-      
-      --gold-primary: #8C660D;
-      --gold-light: #5A4105;
-      --gold-dark: #382802;
-      --text-main: #0B0C10;
-      --text-muted: #2E313D;
-
-      --cinematic-shadow: 0 20px 40px rgba(0, 0, 0, 0.2), 0 0 30px rgba(140, 102, 13, 0.15);
-    }
-
-    [dir="rtl"] {
-      --font-display: 'Cairo', sans-serif;
-      --font-body: 'Cairo', sans-serif;
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      scroll-behavior: smooth;
-    }
-
-    body {
-      background-color: var(--bg-base);
-      color: var(--text-main);
-      font-family: var(--font-body);
-      overflow-x: hidden;
-      line-height: 1.7;
-      transition: background-color 0.5s ease, color 0.5s ease;
-      position: relative;
-    }
-
-    #bg-canvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: -1;
-      pointer-events: none;
-    }
-
-    /* إضافة ظلال سوداء ناعمة للنصوص لزيادة الوضوح والقراءة */
-    p, span, li, a {
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
-    }
-
-    h1, h2, h3, h4, .brand-text {
-      font-family: var(--font-display);
-      text-transform: uppercase;
-      letter-spacing: 3px;
-      font-weight: 700;
-      text-shadow: 0 3px 8px rgba(0, 0, 0, 0.9);
-    }
-
-    .gold-text {
-      background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold-primary) 50%, var(--gold-dark) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      filter: drop-shadow(0 2px 12px rgba(0, 0, 0, 0.9));
-    }
-
-    /* زجاج أكثر ضبابية لحماية النصوص من الخلفية */
-    .glass-card {
-      background: var(--glass-bg);
-      backdrop-filter: blur(40px); /* زيادة الضبابية */
-      -webkit-backdrop-filter: blur(40px);
-      border: 1px solid var(--glass-border);
-      border-radius: 24px;
-      padding: 2.4rem;
-      box-shadow: var(--cinematic-shadow);
-      transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .glass-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, var(--gold-light), transparent);
-      opacity: 0.6;
-    }
-
-    .glass-card:hover {
-      border-color: rgba(212, 175, 55, 0.8);
-      transform: translateY(-8px) scale(1.01);
-      box-shadow: 0 40px 80px rgba(0, 0, 0, 0.95), 0 0 50px rgba(212, 175, 55, 0.25);
-    }
-
-    .reveal {
-      opacity: 0;
-      transform: translateY(40px);
-      transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1), transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    .reveal.active {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    nav {
-      position: fixed;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 92%;
-      max-width: 1200px;
-      z-index: 1000;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0.9rem 2rem;
-      border-radius: 50px;
-      background: var(--glass-bg);
-      backdrop-filter: blur(35px);
-      -webkit-backdrop-filter: blur(35px);
-      border: 1px solid var(--glass-border);
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8);
-    }
-
-    .logo {
-      font-size: 1.4rem;
-      font-weight: 900;
-      color: var(--text-main);
-      text-decoration: none;
-      letter-spacing: 4px;
-    }
-
-    .nav-controls {
-      display: flex;
-      align-items: center;
-      gap: 1.5rem;
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 1.8rem;
-      list-style: none;
-    }
-
-    .nav-links a {
-      color: var(--text-muted);
-      text-decoration: none;
-      font-size: 0.85rem;
-      font-weight: 700;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      transition: color 0.3s, text-shadow 0.3s;
-    }
-
-    .nav-links a:hover {
-      color: var(--gold-primary);
-      text-shadow: 0 0 12px rgba(212, 175, 55, 0.8);
-    }
-
-    .control-btn {
-      background: rgba(212, 175, 55, 0.15);
-      border: 1px solid var(--gold-primary);
-      color: var(--gold-primary);
-      padding: 8px 16px;
-      border-radius: 30px;
-      cursor: pointer;
-      font-size: 0.85rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      transition: all 0.3s ease;
-      box-shadow: 0 0 12px rgba(0, 0, 0, 0.5);
-    }
-
-    .control-btn:hover {
-      background: var(--gold-primary);
-      color: #000;
-      box-shadow: 0 0 25px rgba(212, 175, 55, 0.6);
-    }
-
-    .hero {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      padding: 6rem 1.5rem 2rem 1.5rem;
-    }
-
-    .hero-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      padding: 8px 22px;
-      border-radius: 30px;
-      background: rgba(10, 11, 16, 0.8);
-      border: 1px solid var(--glass-border);
-      font-size: 0.85rem;
-      letter-spacing: 2px;
-      color: var(--gold-primary);
-      margin-bottom: 1.5rem;
-      font-weight: 700;
-      backdrop-filter: blur(20px);
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
-    }
-
-    .hero-title {
-      font-size: clamp(3.2rem, 8vw, 7.5rem);
-      font-weight: 900;
-      line-height: 1.05;
-      margin-bottom: 1.2rem;
-      text-shadow: 0 15px 40px rgba(0, 0, 0, 0.95);
-    }
-
-    .hero-subtitle {
-      font-size: 1.05rem;
-      letter-spacing: 6px;
-      color: var(--gold-primary);
-      margin-bottom: 1.5rem;
-      text-transform: uppercase;
-      font-weight: 700;
-      text-shadow: 0 4px 15px rgba(0, 0, 0, 0.9);
-    }
-
-    .hero-desc {
-      max-width: 700px;
-      color: var(--text-main);
-      font-size: 1.2rem;
-      line-height: 1.8;
-      font-weight: 500;
-      text-shadow: 0 3px 12px rgba(0, 0, 0, 0.95);
-    }
-
-    section {
-      padding: 7rem 1.5rem;
-      max-width: 1300px;
-      margin: 0 auto;
-    }
-
-    .section-header {
-      text-align: center;
-      margin-bottom: 4.5rem;
-    }
-
-    .section-header h2 {
-      font-size: clamp(2.2rem, 4.5vw, 3.2rem);
-      margin-bottom: 0.8rem;
-    }
-
-    .section-header p {
-      color: var(--gold-primary);
-      letter-spacing: 2px;
-      font-size: 0.95rem;
-      font-weight: 700;
-      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9);
-    }
-
-    .grid-3d {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 2.2rem;
-    }
-
-    .canvas-container {
-      width: 100%;
-      height: 210px;
-      border-radius: 16px;
-      overflow: hidden;
-      margin-bottom: 1.4rem;
-      background: radial-gradient(circle at center, rgba(20, 22, 32, 0.85) 0%, rgba(2, 2, 5, 0.98) 100%);
-      border: 1px solid var(--glass-border);
-      box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.9);
-    }
-
-    .about-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 2.5rem;
-    }
-
-    .about-text p {
-      color: var(--text-main);
-      font-size: 1.05rem;
-      margin-bottom: 1.2rem;
-      font-weight: 500;
-    }
-
-    .trait-tag {
-      display: inline-block;
-      padding: 6px 16px;
-      margin: 4px;
-      border-radius: 20px;
-      background: rgba(212, 175, 55, 0.12);
-      border: 1px solid var(--glass-border);
-      font-size: 0.85rem;
-      color: var(--gold-primary);
-      font-weight: 700;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
-    }
-
-    .psyche-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 2rem;
-    }
-
-    .psyche-box {
-      border-left: 4px solid var(--gold-primary);
-      padding-left: 1.4rem;
-    }
-
-    [dir="rtl"] .psyche-box {
-      border-left: none;
-      border-right: 4px solid var(--gold-primary);
-      padding-left: 0;
-      padding-right: 1.4rem;
-    }
-
-    .psyche-box h4 {
-      font-size: 1.25rem;
-      margin-bottom: 0.5rem;
-      color: var(--gold-primary);
-    }
-
-    .psyche-box p {
-      color: var(--text-main);
-      font-size: 1rem;
-      font-weight: 500;
-    }
-
-    .project-link-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      margin-top: 1rem;
-      padding: 8px 18px;
-      border-radius: 20px;
-      background: rgba(212, 175, 55, 0.15);
-      border: 1px solid var(--gold-primary);
-      color: var(--gold-primary);
-      text-decoration: none;
-      font-size: 0.85rem;
-      font-weight: 700;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-    }
-
-    .project-link-btn:hover {
-      background: var(--gold-primary);
-      color: #000;
-      box-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
-    }
-
-    .social-links {
-      display: flex;
-      justify-content: center;
-      gap: 1.8rem;
-      flex-wrap: wrap;
-    }
-
-    .social-btn {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 1rem 2.5rem;
-      border-radius: 40px;
-      text-decoration: none;
-      color: var(--text-main);
-      font-size: 0.95rem;
-      letter-spacing: 1px;
-      font-weight: 700;
-    }
-
-    .social-btn i {
-      font-size: 1.3rem;
-      color: var(--gold-primary);
-    }
-
-    footer {
-      padding: 3.5rem 1.5rem;
-      text-align: center;
-      border-top: 1px solid var(--glass-border);
-      color: var(--text-muted);
-      font-size: 0.85rem;
-      letter-spacing: 1px;
-      font-weight: 700;
-    }
-
-    @media (max-width: 868px) {
-      nav { padding: 0.6rem 1rem; }
-      .nav-links { display: none; }
-      .section-header { margin-bottom: 2.5rem; }
-      .glass-card { padding: 1.6rem; }
-      section { padding: 4rem 1rem; }
-    }
-  </style>
-</head>
-<body>
-
-  <!-- Dynamic 3D Black Hole Background -->
-  <canvas id="bg-canvas"></canvas>
-
-  <!-- Navigation Bar -->
-  <nav>
-    <a href="#" class="logo gold-text">NOTHING</a>
-    <div class="nav-controls">
-      <ul class="nav-links">
-        <li><a href="#about" data-en="Identity" data-ar="الهوية">Identity</a></li>
-        <li><a href="#expertise" data-en="Mastery" data-ar="الخبرات">Mastery</a></li>
-        <li><a href="#domains" data-en="Domains" data-ar="الاهتمامات">Domains</a></li>
-        <li><a href="#psyche" data-en="Mindset" data-ar="العقلية">Mindset</a></li>
-        <li><a href="#projects" data-en="Projects" data-ar="المشاريع">Projects</a></li>
-        <li><a href="#contact" data-en="Connect" data-ar="التواصل">Connect</a></li>
-      </ul>
-      
-      <button class="control-btn" onclick="toggleTheme()" id="theme-toggle">
-        <i class="fa-solid fa-moon"></i>
-      </button>
-
-      <button class="control-btn" id="lang-toggle" onclick="toggleLanguage()">
-        <i class="fa-solid fa-globe"></i> <span id="lang-text">العربية</span>
-      </button>
-    </div>
-  </nav>
-
-  <!-- Hero Section -->
-  <section class="hero">
-    <div class="hero-badge reveal">
-      <i class="fa-solid fa-crown"></i> NOTHING STUDIO
-    </div>
-    <h1 class="hero-title gold-text reveal">NOTHING</h1>
-    <p class="hero-subtitle reveal" data-en="Cradle of Civilizations — Mesopotamia" data-ar="بلاد الرافدين — مهد الحضارات">Cradle of Civilizations — Mesopotamia</p>
-    <p class="hero-desc reveal" data-en="Silence speaks when authority is absolute. Architect of intelligence, digital shadows, and high-frequency innovation." data-ar="الصمت يتحدث عندما تكون الهيبة مطلقة. مهندس الذكاء، والظلال الرقمية، والابتكار عالي التردد.">
-      Silence speaks when authority is absolute. Architect of intelligence, digital shadows, and high-frequency innovation.
-    </p>
-  </section>
-
-  <!-- Identity / About Section -->
-  <section id="about">
-    <div class="section-header reveal">
-      <p data-en="GENESIS & ESSENCE" data-ar="النشأة والجوهر">GENESIS & ESSENCE</p>
-      <h2 class="gold-text" data-en="The Identity" data-ar="الهوية">The Identity</h2>
-    </div>
-
-    <div class="about-grid">
-      <div class="glass-card reveal">
-        <div id="canvas-identity" class="canvas-container"></div>
-        <div class="about-text">
-          <h3 class="gold-text" style="margin-bottom: 0.8rem;" data-en="Mind & Legacy" data-ar="العقل والإرث">Mind & Legacy</h3>
-          <p data-en="An ambitious vision rooted in ancient soil. Driven by relentless intellectual curiosity, mastering complex architectures of the physical, digital, and analytical domains." data-ar="رؤية طموحة تجذرت في أرض الحضارات. مدفوع بشغف لا ينتهي للتعلم، ومتمكن من أرقام وإحداثيات العالم الرقمي والتحليلي.">
-            An ambitious vision rooted in ancient soil. Driven by relentless intellectual curiosity, mastering complex architectures of the physical, digital, and analytical domains.
-          </p>
-          <div>
-            <span class="trait-tag" data-en="High Intellect" data-ar="ذكاء عالٍ">High Intellect</span>
-            <span class="trait-tag" data-en="Relentless Learner" data-ar="محب للتعلم">Relentless Learner</span>
-            <span class="trait-tag" data-en="Peak Physical Discipline" data-ar="عقلية رياضية">Peak Physical Discipline</span>
-            <span class="trait-tag" data-en="Strategic Mindset" data-ar="عقلية ناضجة">Strategic Mindset</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="glass-card reveal">
-        <div id="canvas-allegiance" class="canvas-container"></div>
-        <div class="about-text">
-          <h3 class="gold-text" style="margin-bottom: 0.8rem;" data-en="Core Allegiance" data-ar="الانتماء المطلق">Core Allegiance</h3>
-          <p data-en="Sovereignty above all. Absolute devotion to national allegiance, fortified by an impenetrable psychological layer. Easy to adapt, impossible to manipulate." data-ar="الوطن والسيادة فوق كل شيء. انتماء وثبات لا يتزعزع، محصن بجدار نفسي ناضج. سهل التكيف والاندماج، صعب التلاعب والاقناع.">
-            Sovereignty above all. Absolute devotion to national allegiance, fortified by an impenetrable psychological layer. Easy to adapt, impossible to manipulate.
-          </p>
-          <div>
-            <span class="trait-tag" data-en="Unwavering Loyalty" data-ar="بلده أهم من كل شيء">Unwavering Loyalty</span>
-            <span class="trait-tag" data-en="Adaptable Entity" data-ar="سهل التكيف">Adaptable Entity</span>
-            <span class="trait-tag" data-en="Analytical Skepticism" data-ar="مشكك وصعب الاقناع">Analytical Skepticism</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Expertise / Skills Section -->
-  <section id="expertise">
-    <div class="section-header reveal">
-      <p data-en="ARSENAL & CRAFT" data-ar="المهارات والخبرات">ARSENAL & CRAFT</p>
-      <h2 class="gold-text" data-en="Capabilities" data-ar="القدرات الاحترافية">Capabilities</h2>
-    </div>
-
-    <div class="grid-3d">
-      <div class="glass-card reveal">
-        <div id="canvas-visual" class="canvas-container"></div>
-        <h3 data-en="Visual & Graphic Engineering" data-ar="تصميم الصور والجرافيك" style="margin-bottom: 0.5rem;">Visual & Graphic Engineering</h3>
-        <p style="color: var(--text-main); font-size: 0.95rem; font-weight: 500;" data-en="Image Design, Graphic Architecture, and Cinematic Photography. Crafting high-impact aesthetic realities." data-ar="تصميم الصور، الجرافيك، والتصوير الفوتوغرافي عالي الدقة لتجسيد الهيبة البصرية.">Image Design, Graphic Architecture, and Cinematic Photography. Crafting high-impact aesthetic realities.</p>
-      </div>
-
-      <div class="glass-card reveal">
-        <div id="canvas-cinema" class="canvas-container"></div>
-        <h3 data-en="Cinematography & Motion" data-ar="الإخراج والتصوير السينمائي" style="margin-bottom: 0.5rem;">Cinematography & Motion</h3>
-        <p style="color: var(--text-main); font-size: 0.95rem; font-weight: 500;" data-en="Cinematic Video Direction, High-End Video Production, and Advanced Post-Production Editing." data-ar="تصوير ومونتاج الفيديو السينمائي باحترافية عالية مع معالجة وتحرير المادة البصرية.">Cinematic Video Direction, High-End Video Production, and Advanced Post-Production Editing.</p>
-      </div>
-
-      <div class="glass-card reveal">
-        <div id="canvas-ai" class="canvas-container"></div>
-        <h3 data-en="Artificial Intelligence & Tech" data-ar="الذكاء الاصطناعي والبرمجة" style="margin-bottom: 0.5rem;">Artificial Intelligence & Tech</h3>
-        <p style="color: var(--text-main); font-size: 0.95rem; font-weight: 500;" data-en="AI Specialist, Full-Stack Developer, and C++ / JavaScript System Architect." data-ar="خبير ذكاء اصطناعي، مبرمج ومطور أنظمة بلغات C++ و JavaScript.">AI Specialist, Full-Stack Developer, and C++ / JavaScript System Architect.</p>
-      </div>
-
-      <div class="glass-card reveal">
-        <div id="canvas-intel" class="canvas-container"></div>
-        <h3 data-en="Intelligence & Reconnaissance" data-ar="البحث والتحري الرقمي" style="margin-bottom: 0.5rem;">Intelligence & Reconnaissance</h3>
-        <p style="color: var(--text-main); font-size: 0.95rem; font-weight: 500;" data-en="OSINT Specialist, Advanced Research Specialist, and Information Extraction Operations." data-ar="خبير بعمليات البحث والتحري، وجمع المعلومات الدقيقة وتفكيك البيانات.">OSINT Specialist, Advanced Research Specialist, and Information Extraction Operations.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- Domains Section -->
-  <section id="domains">
-    <div class="section-header reveal">
-      <p data-en="BOUNDLESS HORIZONS" data-ar="مجالات الشغف">BOUNDLESS HORIZONS</p>
-      <h2 class="gold-text" data-en="Domains of Interest" data-ar="الاهتمامات والعلوم">Domains of Interest</h2>
-    </div>
-
-    <div class="grid-3d">
-      <div class="glass-card reveal">
-        <div id="canvas-space" class="canvas-container"></div>
-        <h3 class="gold-text" data-en="Astrophysics & Space" data-ar="علم الفضاء" style="margin-bottom: 0.5rem;">Astrophysics & Space</h3>
-        <p style="color: var(--text-main); font-size: 0.95rem; font-weight: 500;" data-en="Deciphering the celestial mechanics of the cosmos and interstellar phenomena." data-ar="استكشاف أعماق الكون، الفيزياء الفلكية وحركة الأجرام السماوية.">Deciphering the celestial mechanics of the cosmos and interstellar phenomena.</p>
-      </div>
-
-      <div class="glass-card reveal">
-        <div id="canvas-history" class="canvas-container"></div>
-        <h3 class="gold-text" data-en="Ancient History" data-ar="التاريخ الإنساني" style="margin-bottom: 0.5rem;">Ancient History</h3>
-        <p style="color: var(--text-main); font-size: 0.95rem; font-weight: 500;" data-en="Studying power dynamics, empires, and the origin of human civilization." data-ar="دراسة موازين القوى، الحضارات القديمة وأصول التاريخ.">Studying power dynamics, empires, and the origin of human civilization.</p>
-      </div>
-
-      <div class="glass-card reveal">
-        <div id="canvas-nuclear" class="canvas-container"></div>
-        <h3 class="gold-text" data-en="Nuclear & Physics" data-ar="الكيمياء والفيزياء" style="margin-bottom: 0.5rem;">Nuclear & Physics</h3>
-        <p style="color: var(--text-main); font-size: 0.95rem; font-weight: 500;" data-en="Exploring Nuclear Chemistry and High-Voltage Electrical Physics." data-ar="شغف بعلم الكيمياء النووية والفيزياء الكهربائية عالية الطاقة.">Exploring Nuclear Chemistry and High-Voltage Electrical Physics.</p>
-      </div>
-
-      <div class="glass-card reveal">
-        <div id="canvas-engineering" class="canvas-container"></div>
-        <h3 class="gold-text" data-en="Computer & Mechatronics" data-ar="هندسة الحاسوب والميكاترونكس" style="margin-bottom: 0.5rem;">Computer & Mechatronics</h3>
-        <p style="color: var(--text-main); font-size: 0.95rem; font-weight: 500;" data-en="System Architecture, Hardware Systems, and Robotics Automation." data-ar="هندسة الحاسبة، الميكاترونكس، والروبوتات المتقدمة.">System Architecture, Hardware Systems, and Robotics Automation.</p>
-      </div>
-
-      <div class="glass-card reveal">
-        <div id="canvas-strategic" class="canvas-container"></div>
-        <h3 class="gold-text" data-en="Strategic Intelligence" data-ar="مجال الاستخبارات" style="margin-bottom: 0.5rem;">Strategic Intelligence</h3>
-        <p style="color: var(--text-main); font-size: 0.95rem; font-weight: 500;" data-en="Analysis of state intelligence frameworks and geopolitical covert mechanics." data-ar="اهتمام واسع في مجال المخابرات والاستخبارات وتحليل الاستراتيجيات.">Analysis of state intelligence frameworks and geopolitical covert mechanics.</p>
-      </div>
-
-      <div class="glass-card reveal">
-        <div id="canvas-automotive" class="canvas-container"></div>
-        <h3 class="gold-text" data-en="Automotive Mechanics" data-ar="عالم السيارات" style="margin-bottom: 0.5rem;">Automotive Mechanics</h3>
-        <p style="color: var(--text-main); font-size: 0.95rem; font-weight: 500;" data-en="High-performance combustion engineering, aerodynamics, and vehicular dynamics." data-ar="هندسة المحركات والميكانيكا عالية الأداء في عالم السيارات.">High-performance combustion engineering, aerodynamics, and vehicular dynamics.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- Mindset Section -->
-  <section id="psyche">
-    <div class="section-header reveal">
-      <p data-en="THE INNER MECHANICS" data-ar="المبادئ والقواعد">THE INNER MECHANICS</p>
-      <h2 class="gold-text" data-en="Psychological Framework" data-ar="النمط النفسي">Psychological Framework</h2>
-    </div>
-
-    <div class="glass-card reveal">
-      <div class="psyche-grid">
-        <div class="psyche-box">
-          <h4 data-en="Sovereign Priority" data-ar="السيادة والوطن">Sovereign Priority</h4>
-          <p data-en="Country above everything. Unyielding loyalty to heritage and homeland values." data-ar="الوطن أهم من كل شيء. ولاء مطلق للإرث والقيم الوطنية.">Country above everything. Unyielding loyalty to heritage and homeland values.</p>
-        </div>
-        <div class="psyche-box">
-          <h4 data-en="Cognitive Dominance" data-ar="الذكاء النفسي">Cognitive Dominance</h4>
-          <p data-en="Mastery of psychological dynamics. High adaptability coupled with absolute resistance to external influence." data-ar="فهم عميق للتلاعب النفسي والتكيف السريع، مع حصانة تامة ضد التأثير الخارجي.">Mastery of psychological dynamics. High adaptability coupled with absolute resistance to external influence.</p>
-        </div>
-        <div class="psyche-box">
-          <h4 data-en="Systemic Skepticism" data-ar="التشكيك التحليلي">Systemic Skepticism</h4>
-          <p data-en="Questioning all assertions until verified through analytical rigor and empirical proof." data-ar="التشكيك التام في المعطيات حتى يتم إثباتها علمياً وبشكل قاطع.">Questioning all assertions until verified through analytical rigor and empirical proof.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Projects Section -->
-  <section id="projects">
-    <div class="section-header reveal">
-      <p data-en="DIGITAL ARSENAL" data-ar="المشاريع والمنصات">DIGITAL ARSENAL</p>
-      <h2 class="gold-text" data-en="Created & Future Projects" data-ar="المواقع والمشاريع">Created & Future Projects</h2>
-    </div>
-
-    <div class="grid-3d">
-      <!-- Project 1: Civilizations Platform -->
-      <div class="glass-card reveal">
-        <div class="project-status" style="display:inline-block; padding:4px 12px; border-radius:15px; background:rgba(212,175,55,0.15); border:1px solid var(--gold-primary); font-size:0.75rem; color:var(--gold-primary); font-weight:700; margin-bottom:1rem;" data-en="LIVE PLATFORM" data-ar="منصة حية">
-          LIVE PLATFORM
-        </div>
-        <h3 class="gold-text" style="margin-bottom:0.5rem;" data-en="Civilizations Hub" data-ar="منصة الحضارات">Civilizations Hub</h3>
-        <p style="color:var(--text-main); font-size:0.95rem; font-weight:500;" data-en="Interactive web portal showcasing historical and civilizational heritage." data-ar="بوابة إلكترونية تفاعلية تعرض الإرث التاريخي والحضاري.">
-          Interactive web portal showcasing historical and civilizational heritage.
-        </p>
-        <a href="https://thefakenothing.github.io/civilizations.all/" target="_blank" class="project-link-btn" data-en="Visit Project <i class='fa-solid fa-arrow-right'></i>" data-ar="زيارة الموقع <i class='fa-solid fa-arrow-left'></i>">
-          Visit Project <i class="fa-solid fa-arrow-right"></i>
-        </a>
-      </div>
-
-      <!-- Project 2: NOTHING Studio -->
-      <div class="glass-card reveal">
-        <div class="project-status" style="display:inline-block; padding:4px 12px; border-radius:15px; background:rgba(212,175,55,0.15); border:1px solid var(--gold-primary); font-size:0.75rem; color:var(--gold-primary); font-weight:700; margin-bottom:1rem;" data-en="ACTIVE" data-ar="شغال">
-          ACTIVE
-        </div>
-        <h3 class="gold-text" style="margin-bottom:0.5rem;" data-en="NOTHING Studio Portal" data-ar="منصة NOTHING Studio">NOTHING Studio Portal</h3>
-        <p style="color:var(--text-main); font-size:0.95rem; font-weight:500;" data-en="The central glassmorphic & 3D digital presence representing sovereign architecture." data-ar="المنصة المركزية التفاعلية بستايل الزجاج ثلاثي الأبعاد التي تمثل الهوية السيادية.">
-          The central glassmorphic & 3D digital presence representing sovereign architecture.
-        </p>
-      </div>
-
-      <!-- Project 3: Future Planned -->
-      <div class="glass-card reveal" style="opacity: 0.85;">
-        <div class="project-status" style="display:inline-block; padding:4px 12px; border-radius:15px; background:rgba(255,255,255,0.05); border:1px solid var(--glass-border); font-size:0.75rem; color:var(--text-muted); font-weight:700; margin-bottom:1rem;" data-en="IN DEVELOPMENT" data-ar="قيد التطوير">
-          IN DEVELOPMENT
-        </div>
-        <h3 style="margin-bottom:0.5rem; color:var(--text-main);" data-en="AI Intelligence Core" data-ar="مشروع الذكاء الاصطناعي">AI Intelligence Core</h3>
-        <p style="color:var(--text-muted); font-size:0.95rem; font-weight:500;" data-en="Future system for OSINT analytics and automated research framework." data-ar="مشروع مستقبلي مخصص لأنظمة تحليل البيانات والبحث والتحري الرقمي.">
-          Future system for OSINT analytics and automated research framework.
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <!-- Contact Section -->
-  <section id="contact">
-    <div class="section-header reveal">
-      <p data-en="ESTABLISH CONNECTION" data-ar="قنوات التواصل">ESTABLISH CONNECTION</p>
-      <h2 class="gold-text" data-en="Secure Access" data-ar="تواصل معي">Secure Access</h2>
-    </div>
-
-    <div class="social-links reveal">
-      <a href="https://www.tiktok.com/@ah.md.x?_r=1&_t=ZS-9AzAW1Aox4j" target="_blank" class="glass-card social-btn">
-        <i class="fa-brands fa-tiktok"></i> TikTok
-      </a>
-      <a href="https://www.instagram.com/ah.mdx.x?cplk=bmVmdzR1MDJ5eTdv" target="_blank" class="glass-card social-btn">
-        <i class="fa-brands fa-instagram"></i> Instagram
-      </a>
-      <a href="https://www.snapchat.com/add/ahmdx.x?share_id=ff3NyIYUZFI&locale=en-IQ" target="_blank" class="glass-card social-btn">
-        <i class="fa-brands fa-snapchat"></i> Snapchat
-      </a>
-      <a href="mailto:nothingnhg123@gmail.com" class="glass-card social-btn">
-        <i class="fa-solid fa-envelope"></i> Email Encrypted
-      </a>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer>
-    <p data-en="© NOTHING STUDIO. ALL RIGHTS RESERVED. MESOPOTAMIAN LEGACY." data-ar="© ستوديو NOTHING. جميع الحقوق محفوظة. إرث بلاد الرافدين.">© NOTHING STUDIO. ALL RIGHTS RESERVED. MESOPOTAMIAN LEGACY.</p>
-  </footer>
-
-  <!-- ==================== 3D BLACK HOLE ENGINE ==================== -->
-  <script>
-    function toggleTheme() {
-      const html = document.documentElement;
-      const themeBtn = document.getElementById('theme-toggle');
-      const isDark = html.getAttribute('data-theme') === 'dark';
-      
-      const newTheme = isDark ? 'light' : 'dark';
-      html.setAttribute('data-theme', newTheme);
-      themeBtn.innerHTML = isDark ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
-    }
-
-    let currentLang = 'en';
-    function toggleLanguage() {
-      const html = document.documentElement;
-      const langText = document.getElementById('lang-text');
-      
-      currentLang = currentLang === 'en' ? 'ar' : 'en';
-      html.setAttribute('dir', currentLang === 'ar' ? 'rtl' : 'ltr');
-      html.setAttribute('lang', currentLang);
-      langText.textContent = currentLang === 'ar' ? 'English' : 'العربية';
-
-      document.querySelectorAll('[data-en]').forEach(el => {
-        el.innerHTML = el.getAttribute(`data-${currentLang}`);
-      });
-    }
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('active');
-        }
-      });
-    }, { threshold: 0.1 });
-
-    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-
-    const canvas = document.getElementById('bg-canvas');
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
-
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-    const blackHoleGroup = new THREE.Group();
-
-    const horizonGeo = new THREE.SphereGeometry(2, 64, 64);
-    const horizonMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
-    const eventHorizon = new THREE.Mesh(horizonGeo, horizonMat);
-    blackHoleGroup.add(eventHorizon);
-
-    const haloGeo = new THREE.RingGeometry(2.05, 2.5, 128);
-    const haloMat = new THREE.MeshBasicMaterial({
-      color: 0xfff0dd,
-      side: THREE.DoubleSide,
-      transparent: true,
-      opacity: 0.95
-    });
-    const lensingHalo = new THREE.Mesh(haloGeo, haloMat);
-    blackHoleGroup.add(lensingHalo);
-
-    const diskGeo = new THREE.RingGeometry(2.3, 7.5, 128);
-    const canvasTexture = document.createElement('canvas');
-    canvasTexture.width = 512;
-    canvasTexture.height = 512;
-    const ctx = canvasTexture.getContext('2d');
-    const gradient = ctx.createRadialGradient(256, 256, 100, 256, 256, 256);
-    gradient.addColorStop(0, '#ffffff');
-    gradient.addColorStop(0.2, '#ffe0a0');
-    gradient.addColorStop(0.5, '#d47a22');
-    gradient.addColorStop(0.8, '#8c3507');
-    gradient.addColorStop(1, 'transparent');
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, 512, 512);
-
-    const texture = new THREE.CanvasTexture(canvasTexture);
-    const diskMat = new THREE.MeshBasicMaterial({
-      map: texture,
-      side: THREE.DoubleSide,
-      transparent: true,
-      opacity: 0.88
-    });
-    const accretionDisk = new THREE.Mesh(diskGeo, diskMat);
-    accretionDisk.rotation.x = Math.PI / 2.3;
-    accretionDisk.rotation.y = -Math.PI / 12;
-    blackHoleGroup.add(accretionDisk);
-
-    blackHoleGroup.position.set(2.2, 0.2, -4);
-    blackHoleGroup.rotation.z = -0.3;
-    scene.add(blackHoleGroup);
-
-    const starsCount = 1200;
-    const starsGeo = new THREE.BufferGeometry();
-    const starsPos = new Float32Array(starsCount * 3);
-    for(let i=0; i<starsCount*3; i++) {
-      starsPos[i] = (Math.random() - 0.5) * 50;
-    }
-    starsGeo.setAttribute('position', new THREE.BufferAttribute(starsPos, 3));
-    const starsMat = new THREE.PointsMaterial({ size: 0.025, color: 0xffffff, transparent: true, opacity: 0.7 });
-    const starField = new THREE.Points(starsGeo, starsMat);
-    scene.add(starField);
-
-    camera.position.z = 6;
-
-    let mouseX = 0, mouseY = 0;
-    window.addEventListener('mousemove', (e) => {
-      mouseX = (e.clientX / window.innerWidth) - 0.5;
-      mouseY = (e.clientY / window.innerHeight) - 0.5;
-    });
-
-    function animateBlackHole() {
-      requestAnimationFrame(animateBlackHole);
-      accretionDisk.rotation.z += 0.003;
-      starField.rotation.y += 0.0002;
-      camera.position.x += (mouseX * 0.7 - camera.position.x) * 0.04;
-      camera.position.y += (-mouseY * 0.7 - camera.position.y) * 0.04;
-      camera.lookAt(scene.position);
-      renderer.render(scene, camera);
-    }
-    animateBlackHole();
-
-    window.addEventListener('resize', () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    });
-
-    function create3DCardCanvas(containerId, meshType) {
-      const container = document.getElementById(containerId);
-      if (!container) return;
-
-      const cardScene = new THREE.Scene();
-      const cardCamera = new THREE.PerspectiveCamera(50, container.clientWidth / container.clientHeight, 0.1, 100);
-      const cardRenderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-
-      cardRenderer.setSize(container.clientWidth, container.clientHeight);
-      cardRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-      container.appendChild(cardRenderer.domElement);
-
-      const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-      cardScene.add(ambientLight);
-
-      const pointLight = new THREE.PointLight(0xD4AF37, 2, 50);
-      pointLight.position.set(5, 5, 5);
-      cardScene.add(pointLight);
-
-      const goldMaterial = new THREE.MeshStandardMaterial({
-        color: 0xD4AF37,
-        metalness: 0.9,
-        roughness: 0.2,
-        wireframe: meshType === 'space' || meshType === 'intel'
-      });
-
-      let mesh;
-      switch(meshType) {
-        case 'identity': mesh = new THREE.Mesh(new THREE.IcosahedronGeometry(1.1, 0), goldMaterial); break;
-        case 'allegiance': mesh = new THREE.Mesh(new THREE.OctahedronGeometry(1.2, 0), goldMaterial); break;
-        case 'visual': mesh = new THREE.Mesh(new THREE.TorusGeometry(0.9, 0.3, 16, 100), goldMaterial); break;
-        case 'cinema': mesh = new THREE.Mesh(new THREE.CylinderGeometry(0.7, 0.7, 1.4, 32), goldMaterial); break;
-        case 'ai': mesh = new THREE.Mesh(new THREE.DodecahedronGeometry(1, 0), goldMaterial); break;
-        case 'intel': mesh = new THREE.Mesh(new THREE.SphereGeometry(1.1, 16, 16), goldMaterial); break;
-        case 'space': mesh = new THREE.Mesh(new THREE.TorusKnotGeometry(0.7, 0.2, 100, 16), goldMaterial); break;
-        case 'history': mesh = new THREE.Mesh(new THREE.ConeGeometry(0.9, 1.5, 4), goldMaterial); break;
-        case 'nuclear': 
-          mesh = new THREE.Mesh(new THREE.TorusGeometry(0.8, 0.15, 16, 50), goldMaterial);
-          mesh.add(new THREE.Mesh(new THREE.SphereGeometry(0.35, 16, 16), goldMaterial));
-          break;
-        case 'engineering': mesh = new THREE.Mesh(new THREE.BoxGeometry(1.1, 1.1, 1.1), goldMaterial); break;
-        case 'strategic': mesh = new THREE.Mesh(new THREE.TetrahedronGeometry(1.2, 0), goldMaterial); break;
-        case 'automotive': mesh = new THREE.Mesh(new THREE.RingGeometry(0.4, 1, 32), goldMaterial); break;
-        default: mesh = new THREE.Mesh(new THREE.SphereGeometry(1, 32, 32), goldMaterial);
-      }
-
-      cardScene.add(mesh);
-      cardCamera.position.z = 3.2;
-
-      let isHovered = false;
-      container.addEventListener('mouseenter', () => isHovered = true);
-      container.addEventListener('mouseleave', () => isHovered = false);
-
-      function animateCard() {
-        requestAnimationFrame(animateCard);
-        const speed = isHovered ? 0.03 : 0.009;
-        mesh.rotation.x += speed;
-        mesh.rotation.y += speed * 0.8;
-        cardRenderer.render(cardScene, cardCamera);
-      }
-      animateCard();
-
-      window.addEventListener('resize', () => {
-        if (!container) return;
-        cardCamera.aspect = container.clientWidth / container.clientHeight;
-        cardCamera.updateProjectionMatrix();
-        cardRenderer.setSize(container.clientWidth, container.clientHeight);
-      });
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-      create3DCardCanvas('canvas-identity', 'identity');
-      create3DCardCanvas('canvas-allegiance', 'allegiance');
-      create3DCardCanvas('canvas-visual', 'visual');
-      create3DCardCanvas('canvas-cinema', 'cinema');
-      create3DCardCanvas('canvas-ai', 'ai');
-      create3DCardCanvas('canvas-intel', 'intel');
-      create3DCardCanvas('canvas-space', 'space');
-      create3DCardCanvas('canvas-history', 'history');
-      create3DCardCanvas('canvas-nuclear', 'nuclear');
-      create3DCardCanvas('canvas-engineering', 'engineering');
-      create3DCardCanvas('canvas-strategic', 'strategic');
-      create3DCardCanvas('canvas-automotive', 'automotive');
-    });
-  </script>
-</body>
-</html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>NOTHING Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;500;700&family=Cinzel:wght@400;600&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#050506;--coal:#15161a;--gold:#d4af37;--gold2:#f1d88a;--tx:#ece7da;--dim:#9a9486;--glass:rgba(255,255,255,.055);--bd:rgba(255,255,255,.13);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box;margin:0}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{background:radial-gradient(900px 600px at 80% -10%,#2a2412 0,transparent 60%),radial-gradient(700px 500px at -10% 90%,#1d1e24 0,transparent 60%),var(--bg);color:var(--tx);font-family:'Cormorant Garamond',Georgia,serif;font-size:19px;min-height:100vh;overflow-x:hidden}
+h1,h2,h3,.cz{font-family:'Cinzel',Georgia,serif;font-weight:400;letter-spacing:.14em}
+.gold{background:linear-gradient(120deg,var(--gold),var(--gold2),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}
+.glass{background:var(--glass);border:1px solid var(--bd);border-radius:28px;backdrop-filter:blur(26px) saturate(160%);-webkit-backdrop-filter:blur(26px) saturate(160%);box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 20px 50px rgba(0,0,0,.55)}
+main{max-width:980px;margin:0 auto;padding:28px 18px 130px}
+.page{display:none}.page.on{display:block;animation:in .8s cubic-bezier(.2,.7,.2,1)}.page.out{display:block;animation:out .35s forwards}
+@keyframes in{from{opacity:0;transform:translateY(22px) scale(.985);filter:blur(4px)}to{opacity:1;transform:none;filter:none}}
+@keyframes out{to{opacity:0;transform:translateY(-12px);filter:blur(3px)}}
+.hero{text-align:center;padding:34px 18px}
+.hero h1{font-size:clamp(40px,11vw,88px);margin:6px 0}
+.hero p{color:var(--dim);font-style:italic;font-size:22px}
+.m{width:min(300px,78vw);height:auto;aspect-ratio:1;display:block;margin:0 auto}
+.card{padding:26px;margin-top:18px;text-align:center}
+.card h2{font-size:24px;margin:8px 0 10px;color:var(--gold2)}
+.card p{color:var(--tx);opacity:.88;line-height:1.5}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:18px}
+.grid .card{margin:0;padding:16px 10px}.grid .m{width:100%;max-width:200px}.grid h3{font-size:14px;color:var(--gold2);margin:4px 0 6px}.grid p{font-size:16px;opacity:.8}
+.chips{display:flex;flex-wrap:wrap;gap:9px;justify-content:center;margin-top:14px}
+.chip{padding:8px 15px;border-radius:99px;font-size:17px;background:var(--glass);border:1px solid var(--bd);transition:.4s}
+.chip:hover{border-color:var(--gold);color:var(--gold2);transform:translateY(-3px)}
+.links{display:grid;gap:12px;margin-top:20px}
+.links a{display:flex;justify-content:space-between;align-items:center;padding:17px 22px;color:var(--tx);text-decoration:none;border-radius:22px;transition:.4s}
+.links a:hover{border-color:var(--gold);transform:scale(1.02)}.links span{color:var(--gold)}
+nav{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));display:flex;gap:4px;padding:7px;border-radius:99px;z-index:20;max-width:calc(100vw - 20px)}
+nav button{background:none;border:0;color:var(--dim);font-family:'Cinzel',serif;font-size:11px;letter-spacing:.1em;padding:11px 13px;border-radius:99px;cursor:pointer;transition:.4s}
+nav button.on{background:linear-gradient(135deg,rgba(212,175,55,.3),rgba(212,175,55,.08));color:var(--gold2);box-shadow:inset 0 0 0 1px rgba(212,175,55,.5)}
+#splash{position:fixed;inset:0;background:var(--bg);display:grid;place-items:center;z-index:50;transition:opacity 1.4s,visibility 1.4s}
+#splash.h{opacity:0;visibility:hidden}
+#splash div{font-family:'Cinzel',serif;font-size:clamp(30px,9vw,60px);letter-spacing:.5em;animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.35}}
+footer{text-align:center;color:var(--dim);font-size:15px;margin-top:30px;letter-spacing:.1em}
+:root[data-theme="light"]{--bg:#f6f1e4;--gold:#9a7412;--gold2:#7a5a0a;--tx:#1b1a17;--dim:#6d675a;--glass:rgba(255,255,255,.55);--bd:rgba(0,0,0,.12)}
+:root[data-theme="light"] body{background:radial-gradient(900px 600px at 80% -10%,#ecdca8 0,transparent 60%),radial-gradient(700px 500px at -10% 90%,#e4dfd2 0,transparent 60%),var(--bg)}
+:root[data-theme="light"] .glass{box-shadow:inset 0 1px 0 rgba(255,255,255,.8),0 20px 50px rgba(90,70,20,.18)}
+body,.glass,.chip{transition:background-color .6s,color .6s,border-color .6s}
+#tools{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));right:14px;z-index:30;display:flex;gap:8px}
+#tools button{width:44px;height:44px;border-radius:50%;border:1px solid var(--bd);background:var(--glass);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);color:var(--gold2);font-size:18px;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,.18);transition:.4s;font-family:'Amiri',serif}
+#tools button:hover{border-color:var(--gold);transform:scale(1.08)}
+[dir=rtl] *{font-family:'Amiri','Cormorant Garamond',serif!important;letter-spacing:0!important}
+[dir=rtl] h1,[dir=rtl] .hero h3,[dir=rtl] #splash div{font-family:'Cinzel',serif!important;letter-spacing:.14em!important}
+[dir=rtl] body{font-size:21px}[dir=rtl] nav button{font-size:14px}
+main{position:relative;z-index:1}
+#bg{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.fx{position:fixed;pointer-events:none}
+.bar{position:fixed;left:0;right:0;height:50vh;background:#000;z-index:15;animation:open 1.6s 2.2s cubic-bezier(.7,0,.2,1) both}
+.bar.t{top:0}.bar.b{bottom:0}
+@keyframes open{from{height:50vh}to{height:min(4.5vh,38px)}}
+.vig{inset:0;z-index:14;background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,.65) 100%)}
+:root[data-theme="light"] .vig{background:radial-gradient(ellipse at center,transparent 55%,rgba(60,40,0,.25) 100%)}
+.grain{inset:-50%;width:200%;height:200%;z-index:16;opacity:.09;background-image:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27160%27 height=%27160%27%3E%3Cfilter id=%27n%27%3E%3CfeTurbulence type=%27fractalNoise%27 baseFrequency=%27.9%27 numOctaves=%272%27/%3E%3C/filter%3E%3Crect width=%27160%27 height=%27160%27 filter=%27url(%23n)%27/%3E%3C/svg%3E");animation:grain .9s steps(6) infinite}
+@keyframes grain{0%{transform:translate(0,0)}20%{transform:translate(-4%,3%)}40%{transform:translate(3%,-5%)}60%{transform:translate(-5%,-2%)}80%{transform:translate(4%,4%)}100%{transform:translate(0,0)}}
+.sweep{inset:0;z-index:13;background:linear-gradient(115deg,transparent 40%,rgba(241,216,138,.07) 50%,transparent 60%);background-size:250% 100%;animation:sweep 11s linear infinite}
+@keyframes sweep{from{background-position:150% 0}to{background-position:-50% 0}}
+#splash{align-content:center;text-align:center;gap:14px}
+#splash div{animation:reveal 2.2s cubic-bezier(.2,.7,.2,1) forwards}
+@keyframes reveal{from{letter-spacing:1.2em;opacity:0;filter:blur(12px)}to{letter-spacing:.5em;opacity:1;filter:none}}
+#splash p{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.6em;color:var(--dim);animation:in 2s 1s both}
+.hero h1{filter:drop-shadow(0 0 24px rgba(212,175,55,.35))}
+nav button{padding:11px 10px}
+html{scroll-behavior:smooth}
+button,a{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.glass{backdrop-filter:blur(16px) saturate(140%);-webkit-backdrop-filter:blur(16px) saturate(140%)}
+.grain{will-change:transform}
+.sweep{left:-100%;right:auto;width:300%;background:linear-gradient(115deg,transparent 45%,rgba(241,216,138,.07) 50%,transparent 55%);background-size:auto;animation:sweepx 12s linear infinite;will-change:transform}
+@keyframes sweepx{from{transform:translateX(-33%)}to{transform:translateX(33%)}}
+.rv{opacity:0;transform:translateY(26px);transition:opacity .9s cubic-bezier(.2,.7,.2,1),transform .9s cubic-bezier(.2,.7,.2,1)}
+.rv.s{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}.grain{display:none}}
+</style></head><body>
+<div id="splash"><div class="gold">NOTHING</div><p>A NOTHING STUDIO PRODUCTION</p></div>
+<div class="fx sweep"></div><div class="fx vig"></div><div class="fx grain"></div><div class="bar t"></div><div class="bar b"></div>
+<main>
+<section class="page on" id="home"><div class="hero glass"><canvas class="m" data-t="knot" width="300" height="300"></canvas><h1 class="gold">NOTHING</h1><h3 class="cz" style="color:var(--dim);font-size:14px">STUDIO</h3><p style="margin-top:14px">Born where civilization began.<br>Built from silence.</p></div></section>
+<section class="page" id="about"><div class="card glass"><canvas class="m" data-t="core" width="300" height="300"></canvas><h2>THE MIND</h2><p>Ambitious. Relentless. A student of everything, master of what matters. Calm on the surface, calculating beneath.</p></div>
+<div class="card glass"><h2>THE CODE</h2><p>Homeland above all. Adapts to anything, bends to nothing. Persuasion finds no door. Doubt is the first language.</p><div class="chips"><span class="chip">Mesopotamia</span><span class="chip">Athlete</span><span class="chip">Sceptic</span><span class="chip">High IQ</span></div></div></section>
+<section class="page" id="skills"><div class="card glass"><canvas class="m" data-t="skills" width="300" height="300"></canvas><h2>THE CRAFT</h2><p>Every lens, every frame, every line of code — shaped with intent.</p><div class="chips" id="sk"></div></div></section>
+<section class="page" id="interests"><div class="hero" style="padding:0"><h2 class="cz gold" style="font-size:26px">OBSESSIONS</h2></div><div class="grid" id="ints"></div></section>
+<section class="page" id="origins"><div class="hero" style="padding:0"><h2 class="cz gold" style="font-size:26px">CRADLE OF CIVILIZATION</h2><p style="color:var(--dim);font-style:italic;margin-top:6px">Where writing, law and the wheel were born.</p></div><div class="grid"><div class="card glass"><canvas class="m" data-t="ziggurat" width="300" height="300"></canvas><h3>ZIGGURAT OF UR</h3><p>Stairways to the gods.</p></div><div class="card glass"><canvas class="m" data-t="gate" width="300" height="300"></canvas><h3>ISHTAR GATE</h3><p>The gate Babylon bowed through.</p></div><div class="card glass"><canvas class="m" data-t="tablet" width="300" height="300"></canvas><h3>CUNEIFORM</h3><p>The first words ever written.</p></div><div class="card glass"><canvas class="m" data-t="minaret" width="300" height="300"></canvas><h3>MALWIYA MINARET</h3><p>Samarra’s spiral to the sky.</p></div></div></section>
+<section class="page" id="connect"><div class="card glass"><canvas class="m" data-t="link" width="300" height="300"></canvas><h2>ENTER THE SIGNAL</h2><p>Those who are meant to find it, will.</p></div><div class="links" id="lk"></div></section>
+<footer>© NOTHING Studio</footer>
+</main>
+<div id="tools"><button id="lb" aria-label="Language">ع</button><button id="tb" aria-label="Theme">☀</button></div>
+<nav class="glass" id="nv"></nav>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const pages=[["home","Home"],["about","Mind"],["skills","Craft"],["interests","Void"],["origins","Origins"],["connect","Signal"]];
+const skills=["Image Design","Video Design","Graphic Design","Cinematography","Videography","Photography","Video Editing","Editing","AI Expert","Programming","Development","Research & Investigation"];
+const ints=[["space","Space","Silence between the stars."],["history","History","Empires rise. Truth remains."],["atom","Nuclear Chemistry","Power at the smallest scale."],["volt","Electrical Physics","Energy, obeyed."],["chip","Computer Engineering","Logic made real."],["gear","Mechatronics","Steel that thinks."],["eye","Intelligence","Seen by none. Seeing all."],["wheel","Automotive","Motion with soul."]];
+const links=[["TikTok","https://www.tiktok.com/@ah.md.x?_r=1&_t=ZS-9AzAW1Aox4j"],["Instagram","https://www.instagram.com/ah.mdx.x?cplk=bmVmdzR1MDJ5eTdv"],["Snapchat","https://www.snapchat.com/add/ahmdx.x?share_id=ff3NyIYUZFI&locale=en-IQ"],["Email","mailto:nothingnhg123@gmail.com"]];
+document.getElementById('sk').innerHTML=skills.map(s=>`<span class="chip">${s}</span>`).join('');
+document.getElementById('ints').innerHTML=ints.map(i=>`<div class="card glass"><canvas class="m" data-t="${i[0]}" width="300" height="300"></canvas><h3>${i[1].toUpperCase()}</h3><p>${i[2]}</p></div>`).join('');
+document.getElementById('lk').innerHTML=links.map(l=>`<a class="glass" href="${l[1]}" target="_blank" rel="noopener"><b class="cz" style="font-size:15px">${l[0].toUpperCase()}</b><span>↗</span></a>`).join('');
+// navigation
+const nv=document.getElementById('nv');
+nv.innerHTML=pages.map(p=>`<button data-p="${p[0]}">${p[1].toUpperCase()}</button>`).join('');
+let cur='home';
+function go(id,first){
+  if(!pages.some(p=>p[0]===id))id='home';
+  const o=document.getElementById(cur),n=document.getElementById(id);
+  nv.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.p===id));
+  if(!first&&id===cur)return;
+  const show=()=>{document.querySelectorAll('.page').forEach(x=>x.classList.remove('on','out'));n.classList.add('on');window.scrollTo({top:0,behavior:'instant'});cur=id};
+  if(first){show();return}
+  o.classList.add('out');setTimeout(show,330);
+  try{history.replaceState(null,'','#'+id)}catch(e){}
+}
+nv.onclick=e=>{const b=e.target.closest('button');if(b)go(b.dataset.p)};
+window.addEventListener('hashchange',()=>go(location.hash.slice(1)));
+go(location.hash.slice(1)||'home',true);
+setTimeout(()=>document.getElementById('splash').classList.add('h'),2800);
+// 3D
+const R=new THREE.WebGLRenderer({alpha:true,antialias:true});R.setSize(300,300);R.setClearColor(0,0);
+const m1=new THREE.MeshStandardMaterial({color:0x1a1b1f,metalness:.9,roughness:.25,transparent:true,opacity:.88});
+const m2=new THREE.MeshBasicMaterial({color:0xd4af37,wireframe:true,transparent:true,opacity:.6});
+const M=(geo,f)=>{const g=new THREE.Group();g.add(new THREE.Mesh(geo,m1),new THREE.Mesh(geo,m2));f&&f(g);return g};
+const G=THREE,T=(a,b,c,d)=>new G.TorusGeometry(a,b,c,d);
+const build={
+knot:g=>g.add(M(new G.TorusKnotGeometry(.7,.22,100,12))),
+core:g=>g.add(M(new G.IcosahedronGeometry(1,1)),M(new G.OctahedronGeometry(.45))),
+skills:g=>g.add(M(new G.DodecahedronGeometry(.8)),M(T(1.2,.03,8,64),m=>m.rotation.x=1.2)),
+space:g=>g.add(M(new G.SphereGeometry(.7,16,12)),M(T(1.2,.04,8,48),m=>m.rotation.x=1.2)),
+history:g=>[[-.75,.85],[0,.68],[.75,.5]].forEach(a=>g.add(M(new G.CylinderGeometry(a[1],a[1],.55,10),m=>m.position.y=a[0])).children),
+atom:g=>{g.add(M(new G.SphereGeometry(.3,12,10)));[0,1,2].forEach(i=>g.add(M(T(1,.02,6,48),m=>{m.rotation.x=i*1.05;m.rotation.y=i*.6})))},
+volt:g=>g.add(M(new G.ConeGeometry(.6,1.2,4),m=>m.position.y=.6),M(new G.ConeGeometry(.6,1.2,4),m=>{m.position.y=-.6;m.rotation.x=Math.PI})),
+chip:g=>g.add(M(new G.BoxGeometry(1.4,.2,1.4)),M(new G.BoxGeometry(.7,.3,.7),m=>m.position.y=.2)),
+gear:g=>{g.add(M(T(.8,.22,8,16)));for(let i=0;i<12;i++){const a=i/12*6.283;g.add(M(new G.BoxGeometry(.25,.3,.3),m=>{m.position.set(Math.cos(a)*1.1,Math.sin(a)*1.1,0);m.rotation.z=a}))}},
+eye:g=>g.add(M(new G.SphereGeometry(.95,20,12),m=>m.scale.z=.5),M(new G.SphereGeometry(.3,12,10),m=>m.position.z=.5)),
+wheel:g=>g.add(M(T(.8,.3,12,24)),M(new G.CylinderGeometry(.3,.3,.3,10),m=>m.rotation.x=Math.PI/2)),
+ziggurat:g=>[[2,-.6],[1.4,-.2],[.8,.2],[.4,.55]].forEach(a=>g.add(M(new G.BoxGeometry(a[0],a[0]>.5?.4:.3,a[0]),m=>m.position.y=a[1]))),
+gate:g=>{[-.8,.8].forEach(x=>g.add(M(new G.BoxGeometry(.5,1.6,.5),m=>m.position.x=x)));g.add(M(new G.BoxGeometry(2.1,.35,.5),m=>m.position.y=.95),M(new G.TorusGeometry(.55,.09,8,24,Math.PI),m=>m.position.y=-.3))},
+tablet:g=>{g.add(M(new G.BoxGeometry(1.3,1.7,.22)));for(let r=0;r<5;r++)for(let c=0;c<3;c++)g.add(M(new G.BoxGeometry(.28,.07,.1),m=>m.position.set(-.38+c*.38,.6-r*.3,.15)))},
+minaret:g=>{g.add(M(new G.BoxGeometry(1.8,.25,1.8),m=>m.position.y=-1.1));for(let i=0;i<12;i++){const r=.7-.045*i;g.add(M(new G.CylinderGeometry(r,r,.17,12),m=>{m.position.y=-.85+i*.17;m.rotation.y=i*.5}))}g.add(M(new G.CylinderGeometry(.14,.14,.4,8),m=>m.position.y=1.3))},
+link:g=>g.add(M(T(.7,.12,10,40),m=>m.position.x=-.4),M(T(.7,.12,10,40),m=>{m.position.x=.4;m.rotation.y=1.5}))
+};
+const models=[...document.querySelectorAll('canvas.m')].map((c,i)=>{
+  const s=new G.Scene(),cam=new G.PerspectiveCamera(40,1,.1,50);cam.position.set(0,0,4.6);
+  s.add(new G.AmbientLight(0xffffff,.5));const p=new G.PointLight(0xf1d88a,2.2,20);p.position.set(3,3,4);s.add(p);
+  const d=new G.DirectionalLight(0xffffff,.8);d.position.set(-3,1,2);s.add(d);
+  const g=new G.Group();build[c.dataset.t](g);s.add(g);
+  const o={c,s,cam,g,ctx:c.getContext('2d'),v:false,i};
+  new IntersectionObserver(e=>o.v=e[0].isIntersecting).observe(c);return o});
+function loop(t){requestAnimationFrame(loop);t/=1000;bgf(t);
+  fr++;const nv=models.filter(o=>o.v).length>4;for(const o of models){if(!o.v||(nv&&((fr+o.i)&1)))continue;o.g.rotation.y=t*.5+o.i;o.g.rotation.x=Math.sin(t*.6+o.i)*.25;o.g.position.y=Math.sin(t*.9+o.i)*.08;
+    R.render(o.s,o.cam);o.ctx.clearRect(0,0,300,300);o.ctx.drawImage(R.domElement,0,0)}}
+requestAnimationFrame(loop);
+// cinematic world
+const BG=document.createElement('canvas');BG.id='bg';document.body.prepend(BG);
+const br=new G.WebGLRenderer({canvas:BG,alpha:true,antialias:true});br.setPixelRatio(Math.min(devicePixelRatio,1.5));
+const bs=new G.Scene();bs.fog=new G.FogExp2(0x050506,.04);
+const bc=new G.PerspectiveCamera(55,1,.1,120);
+bs.add(new G.AmbientLight(0xffffff,.45));const bl=new G.PointLight(0xf1d88a,3,60);bl.position.set(0,8,-4);bs.add(bl);
+const place=(t,x,y,z,s)=>{const g=new G.Group();build[t](g);g.position.set(x,y,z);g.scale.setScalar(s);bs.add(g);return g};
+const bgo=[place('ziggurat',-10,-.6,-20,3.5),place('gate',10,-.6,-24,3.5),place('minaret',0,2.6,-34,5),place('tablet',-5,2,-8,.9),place('tablet',6,-1,-6,.7),place('ziggurat',14,.6,-40,5)];
+const fl=new G.Mesh(new G.PlaneGeometry(160,160,50,50),new G.MeshBasicMaterial({color:0xd4af37,wireframe:true,transparent:true,opacity:.1}));fl.rotation.x=-Math.PI/2;fl.position.y=-3.4;bs.add(fl);
+const pa=new Float32Array(1500);for(let i=0;i<1500;i+=3){pa[i]=(Math.random()-.5)*50;pa[i+1]=(Math.random()-.5)*16;pa[i+2]=Math.random()*50-40}
+const dust=new G.Points(new G.BufferGeometry().setAttribute('position',new G.BufferAttribute(pa,3)),new G.PointsMaterial({color:0xf1d88a,size:.07,transparent:true,opacity:.7}));bs.add(dust);
+const CP={home:[0,0,6],about:[-3,1,2],skills:[3,0,0],interests:[0,2,-3],origins:[0,-.5,-9],connect:[0,-1,4]};
+let mx=0,my=0;addEventListener('pointermove',e=>{mx=e.clientX/innerWidth-.5;my=e.clientY/innerHeight-.5});
+function rz(){br.setSize(innerWidth,innerHeight,false);bc.aspect=innerWidth/innerHeight;bc.updateProjectionMatrix()}addEventListener('resize',rz);rz();bc.position.set(0,0,12);
+let lt=0,sx=0,sy=0,fr=0,pr=br.getPixelRatio(),ema=.016;
+function bgf(t){const dt=Math.min(t-lt,.1);lt=t;const k=1-Math.exp(-dt*2.2);ema+=(dt-ema)*.04;if(ema>.027&&pr>.75){pr-=.25;br.setPixelRatio(pr);rz();ema=.016}
+  sx+=(mx-sx)*k;sy+=(my-sy)*k;const p=CP[cur]||CP.home;bc.position.x+=(p[0]+sx*2-bc.position.x)*k;bc.position.y+=(p[1]-sy*1.2-bc.position.y)*k;bc.position.z+=(p[2]-bc.position.z)*k;bc.lookAt(0,0,-20);
+  bgo.forEach((o,i)=>{o.rotation.y=(i===3||i===4)?t*.4:Math.sin(t*.15+i)*.3});bgo[3].position.y=2+Math.sin(t*.6)*.4;bgo[4].position.y=-1+Math.cos(t*.6)*.4;dust.rotation.y=t*.01;br.render(bs,bc)}
+// i18n + theme
+const AR={"born where civilization began.":"وُلد حيث بدأت الحضارة.","built from silence.":"صُنع من الصمت.","the mind":"العقل","ambitious. relentless. a student of everything, master of what matters. calm on the surface, calculating beneath.":"طموح. لا يلين. تلميذ لكل شيء، وسيّد لما يهم. هادئ في الظاهر، محسوب في الباطن.","the code":"الشيفرة","homeland above all. adapts to anything, bends to nothing. persuasion finds no door. doubt is the first language.":"الوطن فوق كل شيء. يتأقلم مع أي شيء، ولا ينحني لشيء. الإقناع لا يجد له بابًا. الشك هو اللغة الأولى.","mesopotamia":"بلاد الرافدين","athlete":"رياضي","sceptic":"مشكّك","high iq":"ذكاء عالٍ","the craft":"الحرفة","every lens, every frame, every line of code — shaped with intent.":"كل عدسة، كل إطار، كل سطر برمجي — يُصاغ بقصد.","image design":"تصميم الصور","video design":"تصميم الفيديو","graphic design":"تصميم الجرافيك","cinematography":"التصوير السينمائي","videography":"تصوير الفيديو","photography":"التصوير الفوتوغرافي","video editing":"المونتاج","editing":"التحرير","ai expert":"خبير ذكاء اصطناعي","programming":"البرمجة","development":"التطوير","research & investigation":"البحث والتحري","obsessions":"هوسي","space":"الفضاء","silence between the stars.":"الصمت بين النجوم.","history":"التاريخ","empires rise. truth remains.":"تسقط الإمبراطوريات. وتبقى الحقيقة.","nuclear chemistry":"الكيمياء النووية","power at the smallest scale.":"قوة في أصغر المقاييس.","electrical physics":"الفيزياء الكهربائية","energy, obeyed.":"طاقة مُطيعة.","computer engineering":"هندسة الحاسبات","logic made real.":"منطق يتحول إلى واقع.","mechatronics":"الميكاترونكس","steel that thinks.":"فولاذ يفكّر.","intelligence":"الاستخبارات","seen by none. seeing all.":"لا يراه أحد. يرى كل شيء.","automotive":"السيارات","motion with soul.":"حركة لها روح.","enter the signal":"ادخل الإشارة","those who are meant to find it, will.":"من كُتب له أن يجدها، سيجدها.","tiktok":"تيك توك","instagram":"إنستغرام","snapchat":"سناب شات","email":"البريد الإلكتروني","home":"الرئيسية","mind":"العقل","craft":"الحرفة","void":"الفراغ","signal":"الإشارة"};
+Object.assign(AR,{"origins":"الأصول","cradle of civilization":"مهد الحضارة","where writing, law and the wheel were born.":"حيث وُلدت الكتابة والقانون والعجلة.","ziggurat of ur":"زقورة أور","stairways to the gods.":"سلالم نحو الآلهة.","ishtar gate":"بوابة عشتار","the gate babylon bowed through.":"البوابة التي انحنت لها بابل.","cuneiform":"المسمارية","the first words ever written.":"أولى الكلمات التي كُتبت.","malwiya minaret":"مئذنة الملوية","samarra’s spiral to the sky.":"حلزون سامراء نحو السماء.","a nothing studio production":"من إنتاج NOTHING Studio"});
+const lb=document.getElementById('lb'),tb=document.getElementById('tb');
+const ST=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}},LD=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
+function setLang(l){
+  document.documentElement.lang=l;document.documentElement.dir=l==='ar'?'rtl':'ltr';
+  const w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT),a=[];while(w.nextNode())a.push(w.currentNode);
+  for(const n of a){
+    if(n._o===undefined){const t=n.nodeValue.trim().toLowerCase();if(!AR[t])continue;n._o=n.nodeValue}
+    n.nodeValue=l==='ar'?n._o.replace(n._o.trim(),AR[n._o.trim().toLowerCase()]):n._o}
+  lb.textContent=l==='ar'?'EN':'ع';ST('ns-lang',l)}
+function setTheme(t){
+  document.documentElement.dataset.theme=t;tb.textContent=t==='light'?'☾':'☀';
+  m1.color.set(t==='light'?0xe9e1cc:0x1a1b1f);bs.fog.color.set(t==='light'?0xf6f1e4:0x050506);m2.color.set(t==='light'?0x8a6a10:0xd4af37);ST('ns-theme',t)}
+lb.onclick=()=>setLang(document.documentElement.dir==='rtl'?'en':'ar');
+tb.onclick=()=>setTheme(document.documentElement.dataset.theme==='light'?'dark':'light');
+setTheme(LD('ns-theme')==='light'?'light':'dark');
+if(LD('ns-lang')==='ar')setLang('ar');
+const io=new IntersectionObserver(es=>es.forEach(e=>e.target.classList.toggle('s',e.isIntersecting)),{threshold:.1});
+document.querySelectorAll('.card,.hero').forEach((el,i)=>{el.classList.add('rv');el.style.transitionDelay=((i%4)*.09)+'s';io.observe(el)});
+</script></body></html>
