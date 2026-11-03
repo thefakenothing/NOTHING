@@ -53,7 +53,7 @@ main{position:relative;z-index:1}
 .fx{position:fixed;pointer-events:none}
 .bar{position:fixed;left:0;right:0;height:50vh;background:#000;z-index:15;animation:open 1.6s 2.2s cubic-bezier(.7,0,.2,1) both}
 .bar.t{top:0}.bar.b{bottom:0}
-@keyframes open{from{height:50vh}to{height:min(4.5vh,38px)}}
+@keyframes open{from{height:50vh}to{height:var(--bh)}}
 .vig{inset:0;z-index:14;background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,.65) 100%)}
 :root[data-theme="light"] .vig{background:radial-gradient(ellipse at center,transparent 55%,rgba(60,40,0,.25) 100%)}
 .grain{inset:-50%;width:200%;height:200%;z-index:16;opacity:.09;background-image:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27160%27 height=%27160%27%3E%3Cfilter id=%27n%27%3E%3CfeTurbulence type=%27fractalNoise%27 baseFrequency=%27.9%27 numOctaves=%272%27/%3E%3C/filter%3E%3Crect width=%27160%27 height=%27160%27 filter=%27url(%23n)%27/%3E%3C/svg%3E");animation:grain .9s steps(6) infinite}
@@ -75,6 +75,33 @@ button,a{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 .rv{opacity:0;transform:translateY(26px);transition:opacity .9s cubic-bezier(.2,.7,.2,1),transform .9s cubic-bezier(.2,.7,.2,1)}
 .rv.s{opacity:1;transform:none}
 @media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}.grain{display:none}}
+/* responsive */
+.bar{--bh:min(4.5vh,38px)}
+#tools{right:calc(14px + env(safe-area-inset-right,0px))}
+nav{overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+nav::-webkit-scrollbar{display:none}
+nav button{flex:none}
+@media(hover:none){.chip:hover,.links a:hover,#tools button:hover{transform:none}}
+@media(max-width:480px){
+ body{font-size:18px}main{padding:62px 14px 120px}.bar{--bh:20px}
+ #tools button{width:40px;height:40px;font-size:16px}
+ .card{padding:20px 16px}.grid{gap:10px}.grid .card{padding:14px 8px}
+ .m{width:min(260px,68vw)}.grid .m{width:100%}
+ nav button{font-size:10px;padding:10px 12px}[dir=rtl] nav button{font-size:12px}
+ .hero{padding:26px 12px}
+}
+@media(min-width:760px){
+ .grid{grid-template-columns:repeat(4,1fr);gap:16px}.grid .card{padding:20px 12px}.grid .m{max-width:220px}
+ .links{grid-template-columns:1fr 1fr}
+}
+@media(min-width:900px){
+ body{font-size:20px}main{max-width:1100px;padding:80px 24px 140px}
+ .m{width:340px}.grid .m{width:100%;max-width:230px}.grid h3{font-size:15px}.grid p{font-size:18px}
+ .card{padding:34px}.grid .card{padding:24px 14px}
+ nav button{font-size:12px;padding:12px 24px}
+ #about.on{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:stretch}#about .card{margin-top:0}
+}
+@media(max-height:480px) and (orientation:landscape){.bar{--bh:12px}main{padding-top:56px}.m{width:200px}}
 </style></head><body>
 <div id="splash"><div class="gold">NOTHING</div><p>A NOTHING STUDIO PRODUCTION</p></div>
 <div class="fx sweep"></div><div class="fx vig"></div><div class="fx grain"></div><div class="bar t"></div><div class="bar b"></div>
@@ -107,6 +134,7 @@ function go(id,first){
   if(!pages.some(p=>p[0]===id))id='home';
   const o=document.getElementById(cur),n=document.getElementById(id);
   nv.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.p===id));
+  try{nv.querySelector('.on').scrollIntoView({inline:'center',block:'nearest',behavior:'smooth'})}catch(e){}
   if(!first&&id===cur)return;
   const show=()=>{document.querySelectorAll('.page').forEach(x=>x.classList.remove('on','out'));n.classList.add('on');window.scrollTo({top:0,behavior:'instant'});cur=id};
   if(first){show();return}
@@ -165,7 +193,7 @@ const pa=new Float32Array(1500);for(let i=0;i<1500;i+=3){pa[i]=(Math.random()-.5
 const dust=new G.Points(new G.BufferGeometry().setAttribute('position',new G.BufferAttribute(pa,3)),new G.PointsMaterial({color:0xf1d88a,size:.07,transparent:true,opacity:.7}));bs.add(dust);
 const CP={home:[0,0,6],about:[-3,1,2],skills:[3,0,0],interests:[0,2,-3],origins:[0,-.5,-9],connect:[0,-1,4]};
 let mx=0,my=0;addEventListener('pointermove',e=>{mx=e.clientX/innerWidth-.5;my=e.clientY/innerHeight-.5});
-function rz(){br.setSize(innerWidth,innerHeight,false);bc.aspect=innerWidth/innerHeight;bc.updateProjectionMatrix()}addEventListener('resize',rz);rz();bc.position.set(0,0,12);
+function rz(){br.setSize(innerWidth,innerHeight,false);bc.aspect=innerWidth/innerHeight;bc.fov=bc.aspect<1?78:55;bc.updateProjectionMatrix()}addEventListener('resize',rz);rz();bc.position.set(0,0,12);
 let lt=0,sx=0,sy=0,fr=0,pr=br.getPixelRatio(),ema=.016;
 function bgf(t){const dt=Math.min(t-lt,.1);lt=t;const k=1-Math.exp(-dt*2.2);ema+=(dt-ema)*.04;if(ema>.027&&pr>.75){pr-=.25;br.setPixelRatio(pr);rz();ema=.016}
   sx+=(mx-sx)*k;sy+=(my-sy)*k;const p=CP[cur]||CP.home;bc.position.x+=(p[0]+sx*2-bc.position.x)*k;bc.position.y+=(p[1]-sy*1.2-bc.position.y)*k;bc.position.z+=(p[2]-bc.position.z)*k;bc.lookAt(0,0,-20);
